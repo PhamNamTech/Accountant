@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HDon xmlns="http://laphoadon.gdt.gov.vn/2014/schema">
+  <DLHDon>
+    <NDHDon>
+      <TTChung>
+        <PBan>2.0.0</PBan>
+        <THDon>Hóa đơn giá trị gia tăng</THDon>
+        <KHMSHDon>1</KHMSHDon>
+        <KHHDon>C26TBB</KHHDon>
+        <SHDon>0000108</SHDon>
+        <NLap>2026-10-16</NLap>
+        <DVTTe>VND</DVTTe>
+        <TGia>1</TGia>
+      </TTChung>
+      <NBan>
+        <Ten>TẬP ĐOÀN VIỄN THÔNG VÀ CÔNG NGHỆ THÔNG TIN VIỆT Á</Ten>
+        <MST>0101992233</MST>
+        <DChi>Số 88 Duy Tân, Cầu Giấy, Hà Nội</DChi>
+      </NBan>
+      <NMua>
+        <Ten>CÔNG TY CỔ PHẦN CÔNG NGHỆ VÀ THƯƠNG MẠI NAM PHONG</Ten>
+        <MST>0315667788</MST>
+        <DChi>Tòa nhà Sunrise, Quận 1, TP Hồ Chí Minh</DChi>
+      </NMua>
+      <DSHHDV>
+        <HHDV>
+          <TCat>1</TCat>
+          <STT>1</STT>
+          <THHDV>Phí dịch vụ đường truyền Internet cáp quang Doanh nghiệp Tháng 10/2026</THHDV>
+          <DVT>Tháng</DVT>
+          <SLuong>1</SLuong>
+          <DGia>2000000</DGia>
+          <ThTien>2000000</ThTien>
+          <TSuat>8%</TSuat>
+        </HHDV>
+      </DSHHDV>
+      <TToan>
+        <TgTCThue>2000000</TgTCThue>
+        <TgTThue>160000</TgTThue>
+        <TgTTTBSo>2160000</TgTTTBSo>
+        <TgTTTBChu>Hai triệu một trăm sáu mươi nghìn đồng chẵn.</TgTTTBChu>
+      </TToan>
+    </NDHDon>
+  </DLHDon>
+</HDon>
