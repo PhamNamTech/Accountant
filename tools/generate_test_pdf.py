@@ -81,4 +81,4 @@ def create_sample_pdf_invoice(pdf_path):
     print(f"Generated sample PDF invoice: {pdf_path}")
 
 if __name__ == "__main__":
-    create_sample_pdf_invoice("F:/Accountant/test_data/hoadon_vat.pdf")
+    create_sample_pdf_invoice("F:/Accountant/tests/test_data/hoadon_vat.pdf")

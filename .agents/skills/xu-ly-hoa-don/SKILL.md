@@ -20,10 +20,18 @@ Kích hoạt skill này khi người dùng cung cấp các file hóa đơn đi�
    - Sử dụng tool `batch_export_invoices_to_excel` từ MCP `ketoan-vn` hoặc script Python để quét toàn bộ hóa đơn.
    - Trích xuất đầy đủ: Ký hiệu mẫu số, ký hiệu HĐ, số HĐ, ngày hóa đơn, tên & MST người bán, tên & MST người mua, tổng tiền hàng chưa thuế, tiền thuế GTGT, tổng thanh toán.
 3. **Kiểm tra & Hạch toán**:
-   - Đối với hóa đơn đầu vào (Mua hàng/Dịch vụ):
-     * Ghi nhận Nợ TK chi phí/kho (152, 153, 156, 642, 242...).
-     * Ghi nhận Nợ TK thuế GTGT được khấu trừ (1331 hoặc 1332).
-     * Ghi nhận Có TK công nợ/tiền (331, 111, 112).
+   - **Quy tắc đặt mã danh mục đầu vào (Tham khảo chi tiết tại `docs/Quy_Tac_Hach_Toan_Dau_Vao.md`)**:
+     * **Kế thừa mã NCC cũ (Mã số thuế)**: Nếu NCC đã tồn tại trên phần mềm do kế toán cũ đặt bằng MST, tiếp tục sử dụng mã MST cũ, **tuyệt đối không đổi hay tạo mã mới**.
+     * **Mã Hàng hóa / CCDC / NVL đặt theo THƯƠNG HIỆU (HIỆU GÌ)**: Bắt buộc dựa vào nhãn hiệu sản phẩm (không dựa vào mã NCC). Cấu trúc: `[Loại][Bộ phận]1` + `[Thương hiệu (3 ký tự)]` + `[STT (4 số)]` (VD: Logitech là `LOG` -> `AV1LOG0084`, Bosch là `BOS` -> `AX1BOS0249`, không hiệu là `NOA` -> `CX1NOA0149`).
+     * **Mã Dịch vụ (PDV)**: Toàn bộ phí dịch vụ ship hàng, xăng xe, tiền nước, cước chuyển phát nhanh, tiền điện, buffet, phí hải quan đều dùng mã **`PDV`**.
+   - **Định khoản hóa đơn đầu vào (Mua hàng / Dịch vụ)**:
+     * **Hình thức chứng từ**: Các chứng từ dịch vụ mua vào lập loại **"Chứng từ mua dịch vụ"** (không chọn mua hàng không qua kho).
+     * **Chi phí tiếp khách / buffet**: Đưa vào **TK 6421** (Chi phí bán hàng), tên hàng ghi **"Chi phí tiếp khách"**. Hóa đơn cùng loại thuế suất gom 1 dòng; 2 loại thuế suất gom 2 dòng.
+     * **Hóa đơn tiền điện**: Phân bổ **70% vào TK 6422** (văn phòng), **30% vào TK 154** (phân xưởng).
+     * Dịch vụ phục vụ hoạt động **Nhập khẩu** & Chi phí **Ship hàng mua vào**: Vốn hóa vào nguyên giá hàng mua -> Nợ TK 152, 153, 156 tương ứng.
+     * Dịch vụ phục vụ hoạt động **Xuất khẩu**: Ghi nhận chi phí bán hàng -> Nợ TK 6421 (TT 133).
+     * Thuế GTGT đầu vào: Nợ TK 1331.
+     * Công nợ / Tiền thanh toán: Có TK 331.
    - Đối với hóa đơn đầu ra (Bán hàng/Cung cấp dịch vụ):
      * Ghi nhận Nợ TK phải thu/tiền (131, 111, 112).
      * Ghi nhận Có TK doanh thu (511).

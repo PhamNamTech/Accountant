@@ -27,7 +27,7 @@ Tuyệt đối không áp dụng đồng nhất một tiêu chí ngày phát sin
    - Xác định theo **Ngày lập hóa đơn / chứng từ** (thời điểm ký số và phát hành hóa đơn điện tử).
 3. **Thuế Thu nhập doanh nghiệp (TNDN) & Thuế Thu nhập cá nhân (TNCN):**  
    - Xác định theo **Kỳ tính thuế** (năm tính thuế TNDN; kỳ tính thuế TNCN đối với từng nhóm thu nhập theo quy định chuyển tiếp của luật).
-   - *Giai đoạn chuyển tiếp thuế TNCN tiền lương (01/01/2026 – 30/06/2026):* Chưa xác minh cụ thể từ văn bản gốc Cấp 1; cần đối chiếu **Điều 70 Nghị định số 253/2026/NĐ-CP**, **Thông tư số 89/2026/TT-BTC** và **Nghị quyết số 110/2025/UBTVQH15** về mức giảm trừ gia cảnh mới.
+   - *Giai đoạn chuyển tiếp thuế TNCN tiền lương (01/01/2026 – 30/06/2026):* Chưa có quy tắc kết luận về thủ tục khấu trừ trong nửa đầu năm 2026 do chưa đọc văn bản gốc Cấp 1. Điều 70 Nghị định 253/2026/NĐ-CP có quy định chuyển tiếp liên quan thuế tiền lương đã kê khai nộp theo quy định cũ, và Thông tư 89/2026/TT-BTC bãi bỏ khai thuế tiền lương theo tháng từ 01/07/2026. Chỉ kết luận cụ thể khi đối chiếu trực tiếp văn bản gốc trong thư mục `sources/`.
 4. **Thuế Giá trị gia tăng (GTGT) & Quản lý thuế:**  
    - Xác định theo **Thời điểm phát sinh nghiệp vụ kinh tế** hoặc **Ngày nộp hồ sơ khai thuế / thủ tục thuế** (tuân thủ quy định tại điều khoản thi hành của từng luật).
 
@@ -37,7 +37,7 @@ Tuyệt đối không áp dụng đồng nhất một tiêu chí ngày phát sin
 
 | Lĩnh vực | Tiêu chí mốc xét | Thời điểm / Niên độ | Văn bản áp dụng | Văn bản bị thay thế / Hết hiệu lực | Mức độ xác minh & Ghi chú |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Kế toán DN (Lớn & Vừa)** | Năm tài chính | Bắt đầu từ hoặc sau 01/01/2026 | **Thông tư 99/2025/TT-BTC** | Thông tư 200/2014/TT-BTC | Nguồn Cấp 2 (Bãi bỏ TK 611, 631; đổi tên TK 155; cách hạch toán KKĐK chưa xác minh). |
+| **Kế toán DN (Lớn & Vừa)** | Năm tài chính | Bắt đầu từ hoặc sau 01/01/2026 | **Thông tư 99/2025/TT-BTC** | Thông tư 200/2014/TT-BTC | Nguồn Cấp 2 (Bãi bỏ TK 611, 631, 161, 441; đổi tên TK 155, 112, 244 theo tổng hợp Cấp 2; chưa đối chiếu Phụ lục II văn bản gốc). |
 | **Kế toán DN (Lớn & Vừa)** | Năm tài chính | Bắt đầu trước 01/01/2026 | **Thông tư 200/2014/TT-BTC** | Quyết định 15/2006/QĐ-BTC | Nguồn Cấp 2 / Kiến thức nền (Chưa đối chiếu lại văn bản gốc). |
 | **Kế toán DNNVV** | Quyền lựa chọn của DN | Từ năm tài chính 2026 trở đi | **Thông tư 133/2016/TT-BTC** (đã sửa đổi bởi TT 46/2025) hoặc **TT 99/2025/TT-BTC** | — | Nguồn Cấp 2. DNNVV được chủ động chọn TT 99 hoặc TT 133. |
 | **Kế toán DN Siêu nhỏ** | Quyền lựa chọn của DN | Từ năm tài chính bắt đầu từ hoặc sau 01/07/2026 | **Thông tư 58/2026/TT-BTC** hoặc **Thông tư 133/2016/TT-BTC** | Thông tư 132/2018/TT-BTC | Nguồn Cấp 2 (Hiệu lực 01/07/2026; DN siêu nhỏ được chọn TT 58 hoặc TT 133). |
@@ -49,7 +49,7 @@ Tuyệt đối không áp dụng đồng nhất một tiêu chí ngày phát sin
 | **Thuế TNDN** | Kỳ tính thuế | Kỳ tính thuế năm 2025 trở đi | **Luật Thuế TNDN số 67/2025/QH15** | Luật Thuế TNDN số 14/2008/QH12 (và các sửa đổi) | Nguồn Cấp 2 (Hiệu lực 01/10/2025, áp dụng kỳ thuế 2025). |
 | **Thuế TNCN** | Kỳ tính thuế (tiền lương, KD) | Kỳ tính thuế năm 2026 trở đi | **Luật Thuế TNCN số 109/2025/QH15** | Luật Thuế TNCN số 04/2007/QH12 (và các sửa đổi) | Nguồn Cấp 2 (Áp dụng tiền lương từ kỳ 2026). Giảm trừ theo NQ 110/2025/UBTVQH15. |
 | **Thuế TNCN** | Ngày phát sinh / hiệu lực chung | Từ 01/07/2026 trở đi | **Luật 109/2025/QH15** & **Thông tư 87/2026/TT-BTC** | Luật 04/2007/QH12, Thông tư 111/2013/TT-BTC | Nguồn Cấp 2 (TT 87 thay thế TT 111 từ 01/07/2026; TT 89 bãi bỏ khai tháng). |
-| **Thuế TNCN** | Giai đoạn chuyển tiếp tiền lương | 01/01/2026 – 30/06/2026 | *Chuyển tiếp chưa xác minh cụ thể* | — | Nguồn Cấp 2 (Cần tra cứu Điều 70 NĐ 253/2026/NĐ-CP & TT 89/2026). |
+| **Thuế TNCN** | Giai đoạn chuyển tiếp tiền lương | 01/01/2026 – 30/06/2026 | *Chưa kết luận (Chờ đọc văn bản gốc)* | — | Nguồn Cấp 2 (Điều 70 NĐ 253/2026 liên quan xử lý thuế đã kê khai nộp cũ; TT 89/2026 bãi bỏ khai tháng từ 01/07/2026). |
 | **Thuế TNCN** | Trước 01/01/2026 | Trước 01/01/2026 | **Luật 04/2007/QH12** & **Thông tư 111/2013/TT-BTC** | — | Nguồn Cấp 2 / Kiến thức nền (Chưa đối chiếu lại văn bản gốc). |
 | **Quản lý thuế** | Ngày nộp hồ sơ / thực hiện thủ tục | Từ 01/07/2026 trở đi | **Luật Quản lý thuế số 108/2025/QH15** | Luật Quản lý thuế số 38/2019/QH14 | Nguồn Cấp 2 (Ban hành 10/12/2025, hiệu lực từ 01/07/2026). |
 | **Quản lý thuế** | Ngày nộp hồ sơ / thực hiện thủ tục | 01/01/2025 – 30/06/2026 | **Luật 38/2019/QH14** (sửa đổi bởi **Luật 56/2024/QH15**) | — | Nguồn Cấp 2 (Luật 56/2024 có hiệu lực từ 01/01/2025). |

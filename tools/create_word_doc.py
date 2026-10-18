@@ -337,5 +337,5 @@ def build_document(output_path):
     print(f"File created successfully: {output_path}")
 
 if __name__ == "__main__":
-    out_file = "F:/Accountant/Huong_Dan_Hach_Toan_MISA_TT133.docx"
+    out_file = "F:/Accountant/docs/Huong_Dan_Hach_Toan_MISA_TT133.docx"
     build_document(out_file)

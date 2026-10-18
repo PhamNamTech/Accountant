@@ -15,73 +15,177 @@ from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("ketoan-vn")
 
-CHART_OF_ACCOUNTS = {
-    "111": {"name": "Tiền mặt", "type": "Tài sản"},
-    "1111": {"name": "Tiền Việt Nam", "type": "Tài sản"},
-    "1112": {"name": "Ngoại tệ", "type": "Tài sản"},
-    "112": {"name": "Tiền gửi ngân hàng", "type": "Tài sản"},
-    "1121": {"name": "Tiền Việt Nam gửi ngân hàng", "type": "Tài sản"},
-    "1122": {"name": "Ngoại tệ gửi ngân hàng", "type": "Tài sản"},
-    "121": {"name": "Chứng khoán kinh doanh", "type": "Tài sản"},
-    "128": {"name": "Đầu tư nắm giữ đến ngày đáo hạn", "type": "Tài sản"},
-    "131": {"name": "Phải thu của khách hàng", "type": "Lưỡng tính (Tài sản/Nợ)"},
-    "133": {"name": "Thuế GTGT được khấu trừ", "type": "Tài sản"},
-    "1331": {"name": "Thuế GTGT được khấu trừ của hàng hóa, dịch vụ", "type": "Tài sản"},
-    "1332": {"name": "Thuế GTGT được khấu trừ của tài sản cố định", "type": "Tài sản"},
-    "141": {"name": "Tạm ứng", "type": "Tài sản"},
-    "151": {"name": "Hàng mua đang đi đường", "type": "Tài sản"},
-    "152": {"name": "Nguyên liệu, vật liệu", "type": "Tài sản"},
-    "153": {"name": "Công cụ, dụng cụ", "type": "Tài sản"},
-    # Tài khoản tập hợp chi phí và tính giá thành (Thông tư 200 & 133)
-    "154": {"name": "Chi phí sản xuất, kinh doanh dở dang", "type": "Tài sản"},
-    "1541": {"name": "Chi phí nguyên liệu, vật liệu trực tiếp (TT 133)", "type": "Tài sản"},
-    "1542": {"name": "Chi phí nhân công trực tiếp (TT 133)", "type": "Tài sản"},
-    "1543": {"name": "Chi phí máy thi công (TT 133)", "type": "Tài sản"},
-    "1547": {"name": "Chi phí sản xuất chung (TT 133)", "type": "Tài sản"},
-    "155": {"name": "Thành phẩm", "type": "Tài sản"},
-    "1551": {"name": "Thành phẩm nhập kho", "type": "Tài sản"},
-    "1552": {"name": "Thành phẩm bất động sản", "type": "Tài sản"},
-    "156": {"name": "Hàng hóa", "type": "Tài sản"},
-    "157": {"name": "Hàng gửi đi bán", "type": "Tài sản"},
-    "211": {"name": "Tài sản cố định hữu hình", "type": "Tài sản"},
-    "213": {"name": "Tài sản cố định vô hình", "type": "Tài sản"},
-    "214": {"name": "Hao mòn tài sản cố định", "type": "Điều chỉnh giảm tài sản"},
-    "242": {"name": "Chi phí trả trước", "type": "Tài sản"},
-    "331": {"name": "Phải trả cho người bán", "type": "Lưỡng tính (Nợ/Tài sản)"},
-    "333": {"name": "Thuế và các khoản phải nộp Nhà nước", "type": "Nợ phải trả"},
-    "3331": {"name": "Thuế giá trị gia tăng phải nộp", "type": "Nợ phải trả"},
-    "33311": {"name": "Thuế GTGT đầu ra", "type": "Nợ phải trả"},
-    "3334": {"name": "Thuế thu nhập doanh nghiệp", "type": "Nợ phải trả"},
-    "3335": {"name": "Thuế thu nhập cá nhân", "type": "Nợ phải trả"},
-    "334": {"name": "Phải trả người lao động (Lương)", "type": "Nợ phải trả"},
-    "338": {"name": "Phải trả, phải nộp khác (BHXH, BHYT, KPCĐ)", "type": "Nợ phải trả"},
-    "3383": {"name": "Bảo hiểm xã hội", "type": "Nợ phải trả"},
-    "3384": {"name": "Bảo hiểm y tế", "type": "Nợ phải trả"},
-    "3386": {"name": "Bảo hiểm thất nghiệp", "type": "Nợ phải trả"},
-    "341": {"name": "Vay và nợ thuê tài chính", "type": "Nợ phải trả"},
-    "411": {"name": "Vốn đầu tư của chủ sở hữu", "type": "Vốn chủ sở hữu"},
-    "421": {"name": "Lợi nhuận sau thuế chưa phân phối", "type": "Vốn chủ sở hữu"},
-    "511": {"name": "Doanh thu bán hàng và cung cấp dịch vụ", "type": "Doanh thu"},
-    "515": {"name": "Doanh thu hoạt động tài chính (Lãi tiền gửi, cổ tức...)", "type": "Doanh thu"},
-    # Chi phí sản xuất tính giá thành (Thông tư 200)
-    "621": {"name": "Chi phí nguyên liệu, vật liệu trực tiếp (TT 200)", "type": "Chi phí"},
-    "622": {"name": "Chi phí nhân công trực tiếp (TT 200)", "type": "Chi phí"},
-    "623": {"name": "Chi phí sử dụng máy thi công (TT 200)", "type": "Chi phí"},
-    "627": {"name": "Chi phí sản xuất chung (TT 200)", "type": "Chi phí"},
-    "6271": {"name": "Chi phí nhân viên phân xưởng", "type": "Chi phí"},
-    "6272": {"name": "Chi phí vật liệu phân xưởng", "type": "Chi phí"},
-    "6273": {"name": "Chi phí dụng cụ sản xuất", "type": "Chi phí"},
-    "6274": {"name": "Chi phí khấu hao tài sản cố định", "type": "Chi phí"},
-    "6277": {"name": "Chi phí dịch vụ mua ngoài", "type": "Chi phí"},
-    "6278": {"name": "Chi phí bằng tiền khác", "type": "Chi phí"},
-    "632": {"name": "Giá vốn hàng bán", "type": "Chi phí"},
-    "635": {"name": "Chi phí tài chính (Lãi vay, lỗ tỷ giá...)", "type": "Chi phí"},
-    "641": {"name": "Chi phí bán hàng", "type": "Chi phí"},
-    "642": {"name": "Chi phí quản lý doanh nghiệp (TT200/TT133)", "type": "Chi phí"},
-    "711": {"name": "Thu nhập khác", "type": "Thu nhập"},
-    "811": {"name": "Chi phí khác", "type": "Chi phí"},
-    "911": {"name": "Xác định kết quả kinh doanh", "type": "Trung gian kết chuyển"}
+# Hệ thống tài khoản theo Thông tư 99/2025/TT-BTC (áp dụng cho năm tài chính bắt đầu từ hoặc sau 01/01/2026)
+CHART_OF_ACCOUNTS_TT99 = {
+    "111": {"name": "Tiền mặt", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "1111": {"name": "Tiền Việt Nam", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "1112": {"name": "Ngoại tệ", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "112": {"name": "Tiền gửi không kỳ hạn", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC", "note": "Đổi tên từ 'Tiền gửi ngân hàng' theo TT 99, phản ánh tiền gửi không kỳ hạn"},
+    "1121": {"name": "Tiền Việt Nam gửi không kỳ hạn", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "1122": {"name": "Ngoại tệ gửi không kỳ hạn", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "121": {"name": "Chứng khoán kinh doanh", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "128": {"name": "Đầu tư nắm giữ đến ngày đáo hạn", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "131": {"name": "Phải thu của khách hàng", "type": "Lưỡng tính (Tài sản/Nợ)", "regime": "Thông tư 99/2025/TT-BTC"},
+    "133": {"name": "Thuế GTGT được khấu trừ", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "1331": {"name": "Thuế GTGT được khấu trừ của hàng hóa, dịch vụ", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "1332": {"name": "Thuế GTGT được khấu trừ của tài sản cố định", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "1388": {"name": "Phải thu khác (bồi thường tổn thất...)", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "141": {"name": "Tạm ứng", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "151": {"name": "Hàng mua đang đi đường", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "152": {"name": "Nguyên liệu, vật liệu", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "153": {"name": "Công cụ, dụng cụ", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "154": {"name": "Chi phí sản xuất, kinh doanh dở dang", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "155": {"name": "Sản phẩm", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC", "note": "Đổi tên từ 'Thành phẩm', bãi bỏ tiểu khoản 1551/1557 bắt buộc"},
+    "156": {"name": "Hàng hóa", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "157": {"name": "Hàng gửi đi bán", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "161": {"name": "Chi sự nghiệp", "type": "Tài khoản bãi bỏ", "status": "Bãi bỏ", "regime": "Thông tư 99/2025/TT-BTC", "note": "Bãi bỏ hoàn toàn theo Thông tư 99/2025/TT-BTC"},
+    "211": {"name": "Tài sản cố định hữu hình", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "213": {"name": "Tài sản cố định vô hình", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "214": {"name": "Hao mòn tài sản cố định", "type": "Điều chỉnh giảm tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "215": {"name": "Tài sản sinh học", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC", "note": "Bổ sung mới theo Thông tư 99/2025/TT-BTC"},
+    "242": {"name": "Chi phí trả trước", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC"},
+    "244": {"name": "Ký quỹ, ký cược", "type": "Tài sản", "regime": "Thông tư 99/2025/TT-BTC", "note": "Đổi tên từ 'Cầm cố, thế chấp, ký quỹ, ký cược'; không phản ánh tài sản cầm cố, thế chấp"},
+    "331": {"name": "Phải trả cho người bán", "type": "Lưỡng tính (Nợ/Tài sản)", "regime": "Thông tư 99/2025/TT-BTC"},
+    "333": {"name": "Thuế và các khoản phải nộp Nhà nước", "type": "Nợ phải trả", "regime": "Thông tư 99/2025/TT-BTC"},
+    "3331": {"name": "Thuế giá trị gia tăng phải nộp", "type": "Nợ phải trả", "regime": "Thông tư 99/2025/TT-BTC"},
+    "33311": {"name": "Thuế GTGT đầu ra", "type": "Nợ phải trả", "regime": "Thông tư 99/2025/TT-BTC"},
+    "3334": {"name": "Thuế thu nhập doanh nghiệp", "type": "Nợ phải trả", "regime": "Thông tư 99/2025/TT-BTC"},
+    "3335": {"name": "Thuế thu nhập cá nhân", "type": "Nợ phải trả", "regime": "Thông tư 99/2025/TT-BTC"},
+    "334": {"name": "Phải trả người lao động (Lương)", "type": "Nợ phải trả", "regime": "Thông tư 99/2025/TT-BTC"},
+    "338": {"name": "Phải trả, phải nộp khác (BHXH, BHYT, KPCĐ)", "type": "Nợ phải trả", "regime": "Thông tư 99/2025/TT-BTC"},
+    "341": {"name": "Vay và nợ thuê tài chính", "type": "Nợ phải trả", "regime": "Thông tư 99/2025/TT-BTC"},
+    "411": {"name": "Vốn đầu tư của chủ sở hữu", "type": "Vốn chủ sở hữu", "regime": "Thông tư 99/2025/TT-BTC"},
+    "421": {"name": "Lợi nhuận sau thuế chưa phân phối", "type": "Vốn chủ sở hữu", "regime": "Thông tư 99/2025/TT-BTC"},
+    "441": {"name": "Nguồn vốn đầu tư XDCB", "type": "Tài khoản bãi bỏ", "status": "Bãi bỏ", "regime": "Thông tư 99/2025/TT-BTC", "note": "Bãi bỏ hoàn toàn theo Thông tư 99/2025/TT-BTC"},
+    "511": {"name": "Doanh thu bán hàng và cung cấp dịch vụ", "type": "Doanh thu", "regime": "Thông tư 99/2025/TT-BTC"},
+    "515": {"name": "Doanh thu hoạt động tài chính", "type": "Doanh thu", "regime": "Thông tư 99/2025/TT-BTC"},
+    "611": {"name": "Mua hàng", "type": "Tài khoản bãi bỏ", "status": "Bãi bỏ", "regime": "Thông tư 99/2025/TT-BTC", "note": "Bãi bỏ hoàn toàn theo Thông tư 99/2025/TT-BTC"},
+    "621": {"name": "Chi phí nguyên liệu, vật liệu trực tiếp", "type": "Chi phí", "regime": "Thông tư 99/2025/TT-BTC"},
+    "622": {"name": "Chi phí nhân công trực tiếp", "type": "Chi phí", "regime": "Thông tư 99/2025/TT-BTC"},
+    "623": {"name": "Chi phí sử dụng máy thi công", "type": "Chi phí", "regime": "Thông tư 99/2025/TT-BTC"},
+    "627": {"name": "Chi phí sản xuất chung", "type": "Chi phí", "regime": "Thông tư 99/2025/TT-BTC"},
+    "631": {"name": "Giá thành sản xuất", "type": "Tài khoản bãi bỏ", "status": "Bãi bỏ", "regime": "Thông tư 99/2025/TT-BTC", "note": "Bãi bỏ hoàn toàn theo Thông tư 99/2025/TT-BTC"},
+    "632": {"name": "Giá vốn hàng bán", "type": "Chi phí", "regime": "Thông tư 99/2025/TT-BTC"},
+    "635": {"name": "Chi phí tài chính", "type": "Chi phí", "regime": "Thông tư 99/2025/TT-BTC"},
+    "641": {"name": "Chi phí bán hàng", "type": "Chi phí", "regime": "Thông tư 99/2025/TT-BTC"},
+    "642": {"name": "Chi phí quản lý doanh nghiệp", "type": "Chi phí", "regime": "Thông tư 99/2025/TT-BTC"},
+    "711": {"name": "Thu nhập khác", "type": "Thu nhập", "regime": "Thông tư 99/2025/TT-BTC"},
+    "811": {"name": "Chi phí khác", "type": "Chi phí", "regime": "Thông tư 99/2025/TT-BTC"},
+    "911": {"name": "Xác định kết quả kinh doanh", "type": "Trung gian kết chuyển", "regime": "Thông tư 99/2025/TT-BTC"}
 }
+
+# Hệ thống tài khoản theo Thông tư 200/2014/TT-BTC (áp dụng cho năm tài chính bắt đầu trước 01/01/2026)
+CHART_OF_ACCOUNTS_TT200 = {
+    "111": {"name": "Tiền mặt", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "1111": {"name": "Tiền Việt Nam", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "1112": {"name": "Ngoại tệ", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "112": {"name": "Tiền gửi ngân hàng", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "1121": {"name": "Tiền Việt Nam gửi ngân hàng", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "1122": {"name": "Ngoại tệ gửi ngân hàng", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "121": {"name": "Chứng khoán kinh doanh", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "128": {"name": "Đầu tư nắm giữ đến ngày đáo hạn", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "131": {"name": "Phải thu của khách hàng", "type": "Lưỡng tính (Tài sản/Nợ)", "regime": "Thông tư 200/2014/TT-BTC"},
+    "133": {"name": "Thuế GTGT được khấu trừ", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "1331": {"name": "Thuế GTGT được khấu trừ của hàng hóa, dịch vụ", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "1332": {"name": "Thuế GTGT được khấu trừ của tài sản cố định", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "1388": {"name": "Phải thu khác (bồi thường tổn thất...)", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "141": {"name": "Tạm ứng", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "151": {"name": "Hàng mua đang đi đường", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "152": {"name": "Nguyên liệu, vật liệu", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "153": {"name": "Công cụ, dụng cụ", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "154": {"name": "Chi phí sản xuất, kinh doanh dở dang", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "155": {"name": "Thành phẩm", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "1551": {"name": "Thành phẩm nhập kho", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "1557": {"name": "Thành phẩm bất động sản", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "156": {"name": "Hàng hóa", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "157": {"name": "Hàng gửi đi bán", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "161": {"name": "Chi sự nghiệp", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "211": {"name": "Tài sản cố định hữu hình", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "213": {"name": "Tài sản cố định vô hình", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "214": {"name": "Hao mòn tài sản cố định", "type": "Điều chỉnh giảm tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "242": {"name": "Chi phí trả trước", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "244": {"name": "Cầm cố, thế chấp, ký quỹ, ký cược", "type": "Tài sản", "regime": "Thông tư 200/2014/TT-BTC"},
+    "331": {"name": "Phải trả cho người bán", "type": "Lưỡng tính (Nợ/Tài sản)", "regime": "Thông tư 200/2014/TT-BTC"},
+    "333": {"name": "Thuế và các khoản phải nộp Nhà nước", "type": "Nợ phải trả", "regime": "Thông tư 200/2014/TT-BTC"},
+    "3331": {"name": "Thuế giá trị gia tăng phải nộp", "type": "Nợ phải trả", "regime": "Thông tư 200/2014/TT-BTC"},
+    "33311": {"name": "Thuế GTGT đầu ra", "type": "Nợ phải trả", "regime": "Thông tư 200/2014/TT-BTC"},
+    "3334": {"name": "Thuế thu nhập doanh nghiệp", "type": "Nợ phải trả", "regime": "Thông tư 200/2014/TT-BTC"},
+    "3335": {"name": "Thuế thu nhập cá nhân", "type": "Nợ phải trả", "regime": "Thông tư 200/2014/TT-BTC"},
+    "334": {"name": "Phải trả người lao động (Lương)", "type": "Nợ phải trả", "regime": "Thông tư 200/2014/TT-BTC"},
+    "338": {"name": "Phải trả, phải nộp khác (BHXH, BHYT, KPCĐ)", "type": "Nợ phải trả", "regime": "Thông tư 200/2014/TT-BTC"},
+    "341": {"name": "Vay và nợ thuê tài chính", "type": "Nợ phải trả", "regime": "Thông tư 200/2014/TT-BTC"},
+    "411": {"name": "Vốn đầu tư của chủ sở hữu", "type": "Vốn chủ sở hữu", "regime": "Thông tư 200/2014/TT-BTC"},
+    "421": {"name": "Lợi nhuận sau thuế chưa phân phối", "type": "Vốn chủ sở hữu", "regime": "Thông tư 200/2014/TT-BTC"},
+    "441": {"name": "Nguồn vốn đầu tư XDCB", "type": "Vốn chủ sở hữu", "regime": "Thông tư 200/2014/TT-BTC"},
+    "511": {"name": "Doanh thu bán hàng và cung cấp dịch vụ", "type": "Doanh thu", "regime": "Thông tư 200/2014/TT-BTC"},
+    "515": {"name": "Doanh thu hoạt động tài chính", "type": "Doanh thu", "regime": "Thông tư 200/2014/TT-BTC"},
+    "611": {"name": "Mua hàng", "type": "Chi phí (KKĐK)", "regime": "Thông tư 200/2014/TT-BTC"},
+    "621": {"name": "Chi phí nguyên liệu, vật liệu trực tiếp", "type": "Chi phí", "regime": "Thông tư 200/2014/TT-BTC"},
+    "622": {"name": "Chi phí nhân công trực tiếp", "type": "Chi phí", "regime": "Thông tư 200/2014/TT-BTC"},
+    "623": {"name": "Chi phí sử dụng máy thi công", "type": "Chi phí", "regime": "Thông tư 200/2014/TT-BTC"},
+    "627": {"name": "Chi phí sản xuất chung", "type": "Chi phí", "regime": "Thông tư 200/2014/TT-BTC"},
+    "631": {"name": "Giá thành sản xuất", "type": "Tập hợp chi phí (KKĐK)", "regime": "Thông tư 200/2014/TT-BTC"},
+    "632": {"name": "Giá vốn hàng bán", "type": "Chi phí", "regime": "Thông tư 200/2014/TT-BTC"},
+    "635": {"name": "Chi phí tài chính", "type": "Chi phí", "regime": "Thông tư 200/2014/TT-BTC"},
+    "641": {"name": "Chi phí bán hàng", "type": "Chi phí", "regime": "Thông tư 200/2014/TT-BTC"},
+    "642": {"name": "Chi phí quản lý doanh nghiệp", "type": "Chi phí", "regime": "Thông tư 200/2014/TT-BTC"},
+    "711": {"name": "Thu nhập khác", "type": "Thu nhập", "regime": "Thông tư 200/2014/TT-BTC"},
+    "811": {"name": "Chi phí khác", "type": "Chi phí", "regime": "Thông tư 200/2014/TT-BTC"},
+    "911": {"name": "Xác định kết quả kinh doanh", "type": "Trung gian kết chuyển", "regime": "Thông tư 200/2014/TT-BTC"}
+}
+
+# Hệ thống tài khoản theo Thông tư 133/2016/TT-BTC (Doanh nghiệp nhỏ và vừa)
+CHART_OF_ACCOUNTS_TT133 = {
+    "111": {"name": "Tiền mặt", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "112": {"name": "Tiền gửi ngân hàng", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "121": {"name": "Chứng khoán kinh doanh", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "128": {"name": "Đầu tư nắm giữ đến ngày đáo hạn", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "131": {"name": "Phải thu của khách hàng", "type": "Lưỡng tính (Tài sản/Nợ)", "regime": "Thông tư 133/2016/TT-BTC"},
+    "133": {"name": "Thuế GTGT được khấu trừ", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "1388": {"name": "Phải thu khác (bồi thường tổn thất...)", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "141": {"name": "Tạm ứng", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "151": {"name": "Hàng mua đang đi đường", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "152": {"name": "Nguyên liệu, vật liệu", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "153": {"name": "Công cụ, dụng cụ", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "154": {"name": "Chi phí sản xuất, kinh doanh dở dang", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "1541": {"name": "Chi phí nguyên liệu, vật liệu trực tiếp", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "1542": {"name": "Chi phí nhân công trực tiếp", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "1543": {"name": "Chi phí máy thi công", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "1547": {"name": "Chi phí sản xuất chung", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "155": {"name": "Thành phẩm", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "156": {"name": "Hàng hóa", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "157": {"name": "Hàng gửi đi bán", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "211": {"name": "Tài sản cố định hữu hình", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "214": {"name": "Hao mòn tài sản cố định", "type": "Điều chỉnh giảm tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "229": {"name": "Dự phòng tổn thất tài sản", "type": "Điều chỉnh giảm tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "242": {"name": "Chi phí trả trước", "type": "Tài sản", "regime": "Thông tư 133/2016/TT-BTC"},
+    "331": {"name": "Phải trả cho người bán", "type": "Lưỡng tính (Nợ/Tài sản)", "regime": "Thông tư 133/2016/TT-BTC"},
+    "333": {"name": "Thuế và các khoản phải nộp Nhà nước", "type": "Nợ phải trả", "regime": "Thông tư 133/2016/TT-BTC"},
+    "334": {"name": "Phải trả người lao động (Lương)", "type": "Nợ phải trả", "regime": "Thông tư 133/2016/TT-BTC"},
+    "338": {"name": "Phải trả, phải nộp khác", "type": "Nợ phải trả", "regime": "Thông tư 133/2016/TT-BTC"},
+    "341": {"name": "Vay và nợ thuê tài chính", "type": "Nợ phải trả", "regime": "Thông tư 133/2016/TT-BTC"},
+    "411": {"name": "Vốn đầu tư của chủ sở hữu", "type": "Vốn chủ sở hữu", "regime": "Thông tư 133/2016/TT-BTC"},
+    "421": {"name": "Lợi nhuận sau thuế chưa phân phối", "type": "Vốn chủ sở hữu", "regime": "Thông tư 133/2016/TT-BTC"},
+    "511": {"name": "Doanh thu bán hàng và cung cấp dịch vụ", "type": "Doanh thu", "regime": "Thông tư 133/2016/TT-BTC"},
+    "515": {"name": "Doanh thu hoạt động tài chính", "type": "Doanh thu", "regime": "Thông tư 133/2016/TT-BTC"},
+    "611": {"name": "Mua hàng", "type": "Chi phí (KKĐK)", "regime": "Thông tư 133/2016/TT-BTC"},
+    "621": {"name": "Chi phí NVL trực tiếp", "type": "Không áp dụng", "status": "Không áp dụng", "regime": "Thông tư 133/2016/TT-BTC", "note": "TT 133 không dùng TK 621, hạch toán qua TK 1541"},
+    "622": {"name": "Chi phí nhân công trực tiếp", "type": "Không áp dụng", "status": "Không áp dụng", "regime": "Thông tư 133/2016/TT-BTC", "note": "TT 133 không dùng TK 622, hạch toán qua TK 1542"},
+    "623": {"name": "Chi phí máy thi công", "type": "Không áp dụng", "status": "Không áp dụng", "regime": "Thông tư 133/2016/TT-BTC", "note": "TT 133 không dùng TK 623, hạch toán qua TK 1543"},
+    "627": {"name": "Chi phí sản xuất chung", "type": "Không áp dụng", "status": "Không áp dụng", "regime": "Thông tư 133/2016/TT-BTC", "note": "TT 133 không dùng TK 627, hạch toán qua TK 1547"},
+    "631": {"name": "Giá thành sản xuất", "type": "Tập hợp chi phí (KKĐK)", "regime": "Thông tư 133/2016/TT-BTC"},
+    "632": {"name": "Giá vốn hàng bán", "type": "Chi phí", "regime": "Thông tư 133/2016/TT-BTC"},
+    "635": {"name": "Chi phí tài chính", "type": "Chi phí", "regime": "Thông tư 133/2016/TT-BTC"},
+    "642": {"name": "Chi phí quản lý kinh doanh", "type": "Chi phí", "regime": "Thông tư 133/2016/TT-BTC"},
+    "6421": {"name": "Chi phí bán hàng", "type": "Chi phí", "regime": "Thông tư 133/2016/TT-BTC"},
+    "6422": {"name": "Chi phí quản lý doanh nghiệp", "type": "Chi phí", "regime": "Thông tư 133/2016/TT-BTC"},
+    "711": {"name": "Thu nhập khác", "type": "Thu nhập", "regime": "Thông tư 133/2016/TT-BTC"},
+    "811": {"name": "Chi phí khác", "type": "Chi phí", "regime": "Thông tư 133/2016/TT-BTC"},
+    "911": {"name": "Xác định kết quả kinh doanh", "type": "Trung gian kết chuyển", "regime": "Thông tư 133/2016/TT-BTC"}
+}
+
+# Mặc định hệ thống tài khoản theo Thông tư 99/2025/TT-BTC
+CHART_OF_ACCOUNTS = CHART_OF_ACCOUNTS_TT99
 
 def _get_text(elem, path):
     node = elem.find(path)
@@ -113,14 +217,17 @@ def _parse_single_xml(file_path: str):
     tgtthue = _get_text(root, ".//TToan/TgTThue") or _get_text(root, ".//VATAmount")
     tgtttbso = _get_text(root, ".//TToan/TgTTTBSo") or _get_text(root, ".//TotalAmount")
 
-    items_elems = root.findall(".//DSHHDV/HHDV")
-    if not items_elems:
-        items_elems = root.findall(".//HHDV")
+    items_elems = (
+        root.findall(".//DSHHDVu/HHDVu")
+        or root.findall(".//DSHHDV/HHDV")
+        or root.findall(".//HHDVu")
+        or root.findall(".//HHDV")
+    )
 
     items = []
     for item in items_elems:
-        thhdv = _get_text(item, "THHDV") or _get_text(item, "ItemName")
-        dvt = _get_text(item, "DVT") or _get_text(item, "Unit")
+        thhdv = _get_text(item, "THHDVu") or _get_text(item, "THHDV") or _get_text(item, "ItemName")
+        dvt = _get_text(item, "DVTinh") or _get_text(item, "DVT") or _get_text(item, "Unit")
         sluong = _get_text(item, "SLuong") or _get_text(item, "Quantity") or "0"
         dgia = _get_text(item, "DGia") or _get_text(item, "Price") or "0"
         thtien = _get_text(item, "ThTien") or _get_text(item, "Total") or "0"
@@ -234,13 +341,35 @@ def batch_export_invoices_to_excel(folder_path: str, output_excel_path: str) -> 
     }
 
 @mcp.tool()
-def lookup_accounting_account(query: str) -> dict:
+def lookup_accounting_account(query: str, regime: str = "TT99") -> dict:
+    """
+    Tra cứu mã hoặc tên tài khoản kế toán theo Chế độ Kế toán Doanh nghiệp:
+    - regime="TT99": Thông tư 99/2025/TT-BTC (Mặc định, năm tài chính từ 2026).
+    - regime="TT200": Thông tư 200/2014/TT-BTC (Năm tài chính trước 2026).
+    - regime="TT133": Thông tư 133/2016/TT-BTC (Doanh nghiệp nhỏ và vừa).
+    """
+    regime_key = regime.upper().replace(" ", "").replace("_", "")
+    if "133" in regime_key:
+        chart = CHART_OF_ACCOUNTS_TT133
+        regime_label = "Thông tư 133/2016/TT-BTC"
+    elif "200" in regime_key:
+        chart = CHART_OF_ACCOUNTS_TT200
+        regime_label = "Thông tư 200/2014/TT-BTC"
+    else:
+        chart = CHART_OF_ACCOUNTS_TT99
+        regime_label = "Thông tư 99/2025/TT-BTC"
+
     query_lower = query.lower().strip()
     results = {}
-    for code, info in CHART_OF_ACCOUNTS.items():
-        if query_lower in code or query_lower in info["name"].lower():
+    for code, info in chart.items():
+        if query_lower in code.lower() or query_lower in info["name"].lower():
             results[code] = info
-    return {"results": results, "count": len(results)}
+    return {
+        "regime": regime_label,
+        "query": query,
+        "results": results,
+        "count": len(results)
+    }
 
 @mcp.tool()
 def parse_vietnamese_invoice_pdf(pdf_path: str) -> dict:

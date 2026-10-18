@@ -40,7 +40,7 @@ def test_cost_calculation():
     print(f"    Cơ cấu chi phí: NVL: {res['co_cau_chi_phi_phan_tram']['ty_trong_nvl']}% | "
           f"Nhân công: {res['co_cau_chi_phi_phan_tram']['ty_trong_nhan_cong']}% | "
           f"SXC: {res['co_cau_chi_phi_phan_tram']['ty_trong_sx_chung']}%")
-    print("    Bút toán nhập kho:", res["but_toan_dinh_khoan"]["nhap_kho_thanh_pham"])
+    print("    Bút toán nhập kho:", res["but_toan_dinh_khoan"]["nhap_kho"])
 
 def test_overhead_allocation():
     print("\n[TEST GIA THANH 2] Phân bổ chi phí sản xuất chung (TK 627)...")
@@ -60,7 +60,7 @@ def test_overhead_allocation():
 
 def test_export_cost_sheet():
     print("\n[TEST GIA THANH 3] Xuất Thẻ tính giá thành sản phẩm ra Excel...")
-    out_path = os.path.join(BASE_DIR, "test_output", "The_Tinh_Gia_Thanh_Ban_MDF.xlsx")
+    out_path = os.path.join(BASE_DIR, "tests", "test_output", "The_Tinh_Gia_Thanh_Ban_MDF.xlsx")
     
     res = export_cost_sheet_excel(
         output_excel_path=out_path,
@@ -77,6 +77,8 @@ def test_export_cost_sheet():
     print(f" -> Đạt: Đã tạo file Thẻ tính giá thành chuẩn mẫu tại: {out_path}")
 
 if __name__ == "__main__":
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8')
     print("==================================================")
     print(" BẮT ĐẦU KIỂM THỬ MODULE KẾ TOÁN GIÁ THÀNH")
     print("==================================================")

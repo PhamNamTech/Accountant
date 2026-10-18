@@ -1,3 +1,26 @@
+# Byte-compiled / optimized files
 __pycache__/
-*.pyc
-test_output/
+*.py[cod]
+*$py.class
+
+# Environment variables & secrets (Bảo mật thông tin ngân hàng & API key)
+.env
+.env.*
+!.env.example
+
+# Test outputs & temporary files
+tests/test_output/
+*.log
+
+# Databases & local storage
+*.db
+*.sqlite
+*.sqlite3
+
+# Corporate data isolation (Bảo vệ chứng từ, hóa đơn ngân hàng, sổ sách thực tế)
+data/
+Hach toan/
+sources/*.pdf
+
+# Playwright browser cache
+.playwright/

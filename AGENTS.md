@@ -149,10 +149,10 @@ Trước khi xử lý hạch toán hoặc tư vấn giá thành, agent cần nh�
 ## 5. QUY TẮC SỬ DỤNG CÔNG CỤ (MCP TOOLS & INTEGRATIONS)
 
 ### A. Quy trình phối hợp công cụ theo chuẩn luồng (Order of Execution):
-1. **Bước 1 (Trích xuất chứng từ):** Sử dụng `ketoan-vn` (`parse_vietnamese_invoice_xml`, PDF parser) để bóc tách hóa đơn đầu vào nguyên vật liệu, dịch vụ phân xưởng.
-2. **Bước 2 (Đối chiếu tài khoản):** Sử dụng `lookup_accounting_account` đối chiếu danh mục tài khoản theo đúng chế độ kế toán áp dụng.
+1. **Bước 1 (Trích xuất chứng từ):** Sử dụng `ketoan-vn` (`parse_vietnamese_invoice_xml`, PDF parser) để bóc tách hóa đơn đầu vào nguyên vật liệu, dịch vụ phân xưởng. *(Lưu ý kỹ thuật: Trình bóc tách XML hiện mới chỉ kiểm thử với dữ liệu giả lập theo định dạng Thông tư 78/2021/TT-BTC & Nghị định 123/2020/NĐ-CP; chưa kiểm tra định dạng XML thực tế theo Nghị định 254/2026/NĐ-CP và Thông tư 91/2026/TT-BTC)*.
+2. **Bước 2 (Đối chiếu tài khoản):** Sử dụng `lookup_accounting_account` đối chiếu danh mục tài khoản theo đúng chế độ kế toán áp dụng (truyền tham số `regime="TT99"`, `"TT200"`, hoặc `"TT133"` để tra cứu đúng tên tài khoản và trạng thái bãi bỏ theo từng chế độ).
 3. **Bước 3 (Phân bổ & Tính giá thành):** Gọi `allocate_overhead_costs` phân bổ chi phí SXC cho các sản phẩm, sau đó gọi `calculate_product_cost` tính Tổng giá thành $Z$ và Giá thành đơn vị $z$ (truyền tham số `regime="TT99"`, `"TT200"`, hoặc `"TT133"` để gợi ý định khoản đúng hệ thống tài khoản).
-4. **Bước 4 (Lưu trữ & Xuất báo cáo):** Cập nhật dữ liệu vào cơ sở dữ liệu `sqlite-ketoan` (lưu trữ phiếu xuất kho, lệnh sản xuất), sau đó dùng `excel-mcp` (`export_cost_sheet_excel`, `excel_write_to_sheet`) tạo Thẻ tính giá thành sản phẩm.
+4. **Bước 4 (Lưu trữ & Xuất báo cáo):** Cập nhật dữ liệu vào cơ sở dữ liệu `sqlite-ketoan` (lưu trữ phiếu xuất kho, lệnh sản xuất), sau đó dùng `excel-mcp` (`export_cost_sheet_excel`, `excel_write_to_sheet`) tạo Thẻ tính giá thành sản phẩm hoặc Sổ Nhật ký chung *(Lưu ý: Mã nguồn hiện tại đang tạo sổ theo Mẫu S03a-DN của Thông tư 200/2014/TT-BTC; biểu mẫu sổ theo Phụ lục I Thông tư 99/2025/TT-BTC chưa được lập trình)*.
 
 ### B. Kiểm tra tính hợp lý (Sanity Check Rule - Công cụ không phải chân lý):
 Agent bắt buộc đối soát logic trước khi đưa kết quả cho người dùng:
