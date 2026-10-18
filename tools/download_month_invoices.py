@@ -63,36 +63,45 @@ def aes_encrypt(obj):
     cipher_bytes = encryptor.update(padded_data) + encryptor.finalize()
     return base64.b64encode(cipher_bytes).decode('utf-8')
 
+# Precompiled regex patterns for PDF and text processing
+RE_NGAY_KY = re.compile(r'Ngày ký\s*:\s*(?:\n\s*)*(\d{2}/\d{2}/\d{4})')
+RE_DATE_FALLBACK = re.compile(r'(\d{2}/\d{2}/\d{4})')
+RE_SO_HD = re.compile(r'Số\s*(?:\n\s*)?\(No\)\s*(?:\n\s*)?:?\s*(?:\n\s*)?(\d{7,8})')
+RE_REMARKS = re.compile(r'\(Remarks\)\s*(?:\n\s*)?:?\s*(?:\n\s*)?([^\n]+)')
+RE_SERVICE = re.compile(r'1\s+([^\n\d]+?)\s+\d+[\.,]')
+RE_ILLEGAL_CHARS = re.compile(r'[<>:"/\\|?*]')
+RE_MULTI_SPACES = re.compile(r'\s+')
+
 def parse_pdf_metadata(pdf_bytes):
     """Trích xuất Ngày ký, Số HĐ, Ghi chú nghiệp vụ và Số tiền từ PDF."""
     reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
     full_text = '\n'.join([p.extract_text() for p in reader.pages])
 
     # 1. Ngày ký
-    match_ngay_ky = re.search(r'Ngày ký\s*:\s*(?:\n\s*)*(\d{2}/\d{2}/\d{4})', full_text)
+    match_ngay_ky = RE_NGAY_KY.search(full_text)
     if not match_ngay_ky:
-        match_ngay_ky = re.search(r'(\d{2}/\d{2}/\d{4})', full_text)
+        match_ngay_ky = RE_DATE_FALLBACK.search(full_text)
     ngay_ky_raw = match_ngay_ky.group(1) if match_ngay_ky else ""
     ngay_ky_clean = ngay_ky_raw.replace('/', '')
 
     # 2. Số hóa đơn (No)
-    match_so = re.search(r'Số\s*(?:\n\s*)?\(No\)\s*(?:\n\s*)?:?\s*(?:\n\s*)?(\d{7,8})', full_text)
+    match_so = RE_SO_HD.search(full_text)
     so_no = match_so.group(1) if match_so else ""
     if so_no and len(so_no) < 8:
         so_no = so_no.zfill(8)
 
     # 3. Ghi chú (Remarks)
-    match_remarks = re.search(r'\(Remarks\)\s*(?:\n\s*)?:?\s*(?:\n\s*)?([^\n]+)', full_text)
+    match_remarks = RE_REMARKS.search(full_text)
     remarks_raw = match_remarks.group(1).strip() if match_remarks else ""
     
     remarks_clean = remarks_raw.replace(',', ' ').strip()
-    remarks_clean = re.sub(r'[<>:"/\\|?*]', '', remarks_clean)
-    remarks_clean = re.sub(r'\s+', ' ', remarks_clean)
+    remarks_clean = RE_ILLEGAL_CHARS.sub('', remarks_clean)
+    remarks_clean = RE_MULTI_SPACES.sub(' ', remarks_clean)
     
     if not remarks_clean:
-        match_service = re.search(r'1\s+([^\n\d]+?)\s+\d+[\.,]', full_text)
+        match_service = RE_SERVICE.search(full_text)
         remarks_clean = match_service.group(1).strip() if match_service else "HOA DON BANK VCB"
-        remarks_clean = re.sub(r'[<>:"/\\|?*]', '', remarks_clean)
+        remarks_clean = RE_ILLEGAL_CHARS.sub('', remarks_clean)
 
     formatted_name = f"{ngay_ky_clean}-{so_no}-{remarks_clean}"
     return {
@@ -185,7 +194,7 @@ def export_summary_excel(invoices, output_file):
             
     print(f"-> Đã xuất Bảng kê Excel chi tiết: {output_file}")
 
-def run_direct_api(month_str="10/2026", account="", fee_only=False, headed=False, force=False, sync_db=True):
+def run_direct_api(month_str="10/2026", account="", fee_only=False, headed=False, force=False, sync_db=True, progress_callback=None):
     """
     Thực thi tải và hạch toán toàn bộ hóa đơn trong tháng bằng Direct API.
     """
@@ -211,6 +220,9 @@ def run_direct_api(month_str="10/2026", account="", fee_only=False, headed=False
     print(f"  Thư mục đích: {target_dir}")
     print("="*85 + "\n")
     
+    if progress_callback:
+        progress_callback({"status": "starting", "message": f"Bắt đầu khởi tạo phiên tải hóa đơn VCB kỳ {month_str}..."})
+    
     start_time = time.time()
     processed_list = []
     
@@ -220,196 +232,221 @@ def run_direct_api(month_str="10/2026", account="", fee_only=False, headed=False
             headless=not headed,
             args=['--disable-http2', '--ignore-certificate-errors', '--no-sandbox']
         )
-        context = browser.new_context(
-            user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'
-        )
-        page = context.new_page()
-        
-        # Thiết lập phiên TLS/WAF ban đầu
-        print("1. Đang kết nối máy chủ Vietcombank và thiết lập phiên bảo mật...")
-        page.goto('https://einvoice.vietcombank.com.vn/', wait_until='networkidle')
-        
-        # 1. Đăng nhập trực tiếp qua API
-        if not DEFAULT_USERNAME or not DEFAULT_PASSWORD:
-            print("LỖI BẢO MẬT: Chưa cấu hình VCB_USERNAME và VCB_PASSWORD trong file .env hoặc biến môi trường!")
-            print("Vui lòng tạo file .env theo mẫu .env.example và điền thông tin tài khoản.")
-            browser.close()
-            return []
+        try:
+            context = browser.new_context(
+                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'
+            )
+            page = context.new_page()
             
-        print("2. Đang gửi yêu cầu đăng nhập mã hóa AES...")
-        login_enc = aes_encrypt({"userName": DEFAULT_USERNAME, "password": DEFAULT_PASSWORD})
-        login_res = page.evaluate("""async (enc) => {
-            const resp = await fetch("https://gw-einvoice.vietcombank.com.vn/api/system/account/login-portal", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ data: enc })
-            });
-            return await resp.json();
-        }""", login_enc)
-        
-        token = login_res.get('accessToken')
-        if not token:
-            print("Đăng nhập thất bại:", login_res)
-            browser.close()
-            return []
+            # Thiết lập phiên TLS/WAF ban đầu
+            print("1. Đang kết nối máy chủ Vietcombank và thiết lập phiên bảo mật...")
+            if progress_callback:
+                progress_callback({"status": "connecting", "message": "Đang kết nối máy chủ Vietcombank và thiết lập phiên bảo mật..."})
+            page.goto('https://einvoice.vietcombank.com.vn/', wait_until='networkidle')
             
-        print("-> Đăng nhập thành công! Đã cấp phát Bearer Token.")
+            # 1. Đăng nhập trực tiếp qua API
+            if not DEFAULT_USERNAME or not DEFAULT_PASSWORD:
+                msg = "Chưa cấu hình VCB_USERNAME và VCB_PASSWORD trong file .env hoặc biến môi trường!"
+                print("LỖI BẢO MẬT:", msg)
+                if progress_callback:
+                    progress_callback({"status": "error", "message": msg})
+                raise ValueError(msg)
+            
+            print("2. Đang gửi yêu cầu đăng nhập mã hóa AES...")
+            if progress_callback:
+                progress_callback({"status": "authenticating", "message": "Đang gửi yêu cầu xác thực tài khoản mã hóa AES..."})
+            login_enc = aes_encrypt({"userName": DEFAULT_USERNAME, "password": DEFAULT_PASSWORD})
+            login_res = page.evaluate("""async (enc) => {
+                const resp = await fetch("https://gw-einvoice.vietcombank.com.vn/api/system/account/login-portal", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ data: enc })
+                });
+                return await resp.json();
+            }""", login_enc)
         
-        # 2. Truy vấn danh sách hóa đơn qua API
-        print(f"3. Đang truy vấn toàn bộ hóa đơn từ {from_date} đến {to_date}...")
-        query_enc = aes_encrypt({
-            "type": 1,
-            "invoiceStatus": None,
-            "createFromDate": from_date,
-            "createToDate": to_date,
-            "textSearch": "",
-            "invoiceNo": "",
-            "fromNumber": None,
-            "toNumber": None,
-            "transactionId": "",
-            "buyerBankAccount": account or "",
-            "skipCount": 0,
-            "maxResultCount": 100,
-            "totalCount": 0
-        })
+            token = login_res.get('accessToken')
+            if not token:
+                err_msg = f"Đăng nhập Vietcombank thất bại: {login_res.get('error', {}).get('message', 'Sai tên đăng nhập hoặc mật khẩu')}"
+                print(err_msg)
+                if progress_callback:
+                    progress_callback({"status": "error", "message": err_msg})
+                raise ValueError(err_msg)
+            
+            print("-> Đăng nhập thành công! Đã cấp phát Bearer Token.")
+            if progress_callback:
+                progress_callback({"status": "authenticated", "message": "Đăng nhập thành công! Đang truy vấn danh sách hóa đơn..."})
+        
+            # 2. Truy vấn danh sách hóa đơn qua API
+            print(f"3. Đang truy vấn toàn bộ hóa đơn từ {from_date} đến {to_date}...")
+            query_enc = aes_encrypt({
+                "type": 1,
+                "invoiceStatus": None,
+                "createFromDate": from_date,
+                "createToDate": to_date,
+                "textSearch": "",
+                "invoiceNo": "",
+                "fromNumber": None,
+                "toNumber": None,
+                "transactionId": "",
+                "buyerBankAccount": account or "",
+                "skipCount": 0,
+                "maxResultCount": 100,
+                "totalCount": 0
+            })
 
         
-        query_res = page.evaluate("""async (args) => {
-            const resp = await fetch("https://gw-einvoice.vietcombank.com.vn/api/portal/PortalApiService/portal-private", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + args.token
-                },
-                body: JSON.stringify({ data: args.enc })
-            });
-            return await resp.json();
-        }""", {'token': token, 'enc': query_enc})
-        
-        items = query_res.get('items', [])
-        print(f"-> Tìm thấy {len(items)} hóa đơn thuộc Tháng {month_str}.\n")
-        
-        # 3. Tải và xử lý từng hóa đơn
-        for idx, item in enumerate(items, 1):
-            inv_no = item['invoiceNo']
-            inv_date_raw = item['invoiceDate'][:10] # yyyy-mm-dd
-            d_parts = inv_date_raw.split('-')
-            ngay_hd = f"{d_parts[2]}/{d_parts[1]}/{d_parts[0]}"
-            ngay_hd_iso = inv_date_raw
-            
-            # Chuẩn bị payload tải
-            dl_pdf_enc = aes_encrypt({
-                "templateNo": item['templateNo'],
-                "serialNo": item['serialNo'],
-                "invoiceNo": inv_no,
-                "id": item['id']
-            })
-            dl_xml_enc = aes_encrypt({
-                "templateNo": item['templateNo'],
-                "serialNo": item['serialNo'],
-                "invoiceNo": inv_no,
-                "id": item['id'],
-                "source": 8
-            })
-            
-            # Tải đồng thời cả PDF và XML qua API
-            files_res = page.evaluate("""async (args) => {
-                const pResp = await fetch("https://gw-einvoice.vietcombank.com.vn/api/portal/PortalApiService/download/private/unofficial", {
+            query_res = page.evaluate("""async (args) => {
+                const resp = await fetch("https://gw-einvoice.vietcombank.com.vn/api/portal/PortalApiService/portal-private", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + args.token },
-                    body: JSON.stringify({ data: args.pdfEnc })
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + args.token
+                    },
+                    body: JSON.stringify({ data: args.enc })
                 });
-                const pJson = await pResp.json();
-                
-                const xResp = await fetch("https://gw-einvoice.vietcombank.com.vn/api/portal/PortalApiService/download/private/xml", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + args.token },
-                    body: JSON.stringify({ data: args.xmlEnc })
-                });
-                const xJson = await xResp.json();
-                
-                return { pdfB64: pJson.fileBytes, xmlB64: xJson.fileBytes };
-            }""", {'token': token, 'pdfEnc': dl_pdf_enc, 'xmlEnc': dl_xml_enc})
+                return await resp.json();
+            }""", {'token': token, 'enc': query_enc})
+        
+            items = query_res.get('items', [])
+            print(f"-> Tìm thấy {len(items)} hóa đơn thuộc Tháng {month_str}.\n")
+            if progress_callback:
+                progress_callback({
+                    "status": "querying",
+                    "total": len(items),
+                    "message": f"Tìm thấy {len(items)} hóa đơn thuộc Tháng {month_str}."
+                })
+        
+            # 3. Tải và xử lý từng hóa đơn
+            for idx, item in enumerate(items, 1):
+                inv_no = item['invoiceNo']
+                inv_date_raw = item['invoiceDate'][:10] # yyyy-mm-dd
+                d_parts = inv_date_raw.split('-')
+                ngay_hd = f"{d_parts[2]}/{d_parts[1]}/{d_parts[0]}"
+                ngay_hd_iso = inv_date_raw
             
-            if not files_res.get('pdfB64'):
-                print(f"[{idx}/{len(items)}] Không nhận được dữ liệu PDF cho HĐ {inv_no}!")
-                continue
+                # Chuẩn bị payload tải
+                dl_pdf_enc = aes_encrypt({
+                    "templateNo": item['templateNo'],
+                    "serialNo": item['serialNo'],
+                    "invoiceNo": inv_no,
+                    "id": item['id']
+                })
+                dl_xml_enc = aes_encrypt({
+                    "templateNo": item['templateNo'],
+                    "serialNo": item['serialNo'],
+                    "invoiceNo": inv_no,
+                    "id": item['id'],
+                    "source": 8
+                })
+            
+                # Tải đồng thời cả PDF và XML qua API
+                files_res = page.evaluate("""async (args) => {
+                    const pResp = await fetch("https://gw-einvoice.vietcombank.com.vn/api/portal/PortalApiService/download/private/unofficial", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + args.token },
+                        body: JSON.stringify({ data: args.pdfEnc })
+                    });
+                    const pJson = await pResp.json();
                 
-            raw_pdf_bytes = base64.b64decode(files_res['pdfB64'])
-            raw_xml_bytes = base64.b64decode(files_res['xmlB64']) if files_res.get('xmlB64') else None
-            
-            # Đọc metadata từ PDF
-            meta = parse_pdf_metadata(raw_pdf_bytes)
-            
-            # Nếu người dùng chỉ muốn lấy hóa đơn phí dịch vụ, bỏ qua các hóa đơn thu lãi vay
-            if fee_only and any(kw in meta['remarks_clean'].lower() for kw in ['thu lai', 'lai tai khoan vay', 'lai vay', 'lãi']):
-                print(f"[{idx}/{len(items)}] BỎ QUA (Phí dịch vụ only): {meta['so_no']} - {meta['remarks_clean']}")
-                continue
+                    const xResp = await fetch("https://gw-einvoice.vietcombank.com.vn/api/portal/PortalApiService/download/private/xml", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + args.token },
+                        body: JSON.stringify({ data: args.xmlEnc })
+                    });
+                    const xJson = await xResp.json();
                 
-            # Bóc tách chính xác số tiền từ dữ liệu XML gốc
-            amount = float(item.get('totalAmount', 0))
-            vat = 0.0
-            total = 0.0
+                    return { pdfB64: pJson.fileBytes, xmlB64: xJson.fileBytes };
+                }""", {'token': token, 'pdfEnc': dl_pdf_enc, 'xmlEnc': dl_xml_enc})
             
-            if raw_xml_bytes:
-                try:
-                    import xml.etree.ElementTree as ET
-                    xml_root = ET.fromstring(raw_xml_bytes)
-                    th_tien = xml_root.find('.//ThTien')
-                    if th_tien is None:
-                        th_tien = xml_root.find('.//TgTCThue')
-                    t_thue = xml_root.find('.//TThue')
-                    if t_thue is None:
-                        t_thue = xml_root.find('.//TgTThue')
-                    tg_tt = xml_root.find('.//TgTTTBSo')
+                if not files_res.get('pdfB64'):
+                    print(f"[{idx}/{len(items)}] Không nhận được dữ liệu PDF cho HĐ {inv_no}!")
+                    continue
+                
+                raw_pdf_bytes = base64.b64decode(files_res['pdfB64'])
+                raw_xml_bytes = base64.b64decode(files_res['xmlB64']) if files_res.get('xmlB64') else None
+            
+                # Đọc metadata từ PDF
+                meta = parse_pdf_metadata(raw_pdf_bytes)
+            
+                # Nếu người dùng chỉ muốn lấy hóa đơn phí dịch vụ, bỏ qua các hóa đơn thu lãi vay
+                if fee_only and any(kw in meta['remarks_clean'].lower() for kw in ['thu lai', 'lai tai khoan vay', 'lai vay', 'lãi']):
+                    print(f"[{idx}/{len(items)}] BỎ QUA (Phí dịch vụ only): {meta['so_no']} - {meta['remarks_clean']}")
+                    continue
+                
+                # Bóc tách chính xác số tiền từ dữ liệu XML gốc
+                amount = float(item.get('totalAmount', 0))
+                vat = 0.0
+                total = 0.0
+            
+                if raw_xml_bytes:
+                    try:
+                        import xml.etree.ElementTree as ET
+                        xml_root = ET.fromstring(raw_xml_bytes)
+                        th_tien = xml_root.find('.//ThTien')
+                        if th_tien is None:
+                            th_tien = xml_root.find('.//TgTCThue')
+                        t_thue = xml_root.find('.//TThue')
+                        if t_thue is None:
+                            t_thue = xml_root.find('.//TgTThue')
+                        tg_tt = xml_root.find('.//TgTTTBSo')
                     
-                    if th_tien is not None and th_tien.text and th_tien.text.strip():
-                        amount = float(th_tien.text.strip())
-                    if t_thue is not None and t_thue.text and t_thue.text.strip():
-                        vat = float(t_thue.text.strip())
-                    if tg_tt is not None and tg_tt.text and tg_tt.text.strip():
-                        total = float(tg_tt.text.strip())
-                except Exception:
-                    pass
+                        if th_tien is not None and th_tien.text and th_tien.text.strip():
+                            amount = float(th_tien.text.strip())
+                        if t_thue is not None and t_thue.text and t_thue.text.strip():
+                            vat = float(t_thue.text.strip())
+                        if tg_tt is not None and tg_tt.text and tg_tt.text.strip():
+                            total = float(tg_tt.text.strip())
+                    except Exception:
+                        pass
                     
-            if total == 0:
-                total = amount + vat
-            if vat == 0 and total > amount:
-                vat = round(total - amount, 2)
+                if total == 0:
+                    total = amount + vat
+                if vat == 0 and total > amount:
+                    vat = round(total - amount, 2)
 
                 
-            # Lưu file vào thư mục đích
-            pdf_path = os.path.join(target_dir, f"{meta['formatted_name']}.pdf")
-            xml_path = os.path.join(target_dir, f"{meta['formatted_name']}.xml")
+                # Lưu file vào thư mục đích
+                pdf_path = os.path.join(target_dir, f"{meta['formatted_name']}.pdf")
+                xml_path = os.path.join(target_dir, f"{meta['formatted_name']}.xml")
             
-            with open(pdf_path, "wb") as f:
-                f.write(raw_pdf_bytes)
-            if raw_xml_bytes:
-                with open(xml_path, "wb") as f:
-                    f.write(raw_xml_bytes)
+                with open(pdf_path, "wb") as f:
+                    f.write(raw_pdf_bytes)
+                if raw_xml_bytes:
+                    with open(xml_path, "wb") as f:
+                        f.write(raw_xml_bytes)
                     
-            print(f"[{idx}/{len(items)}] ĐÃ TẢI & ĐỔI TÊN THÀNH CÔNG:")
-            print(f"    - Ngày HĐ: {ngay_hd} | Ngày ký: {meta['ngay_ky_raw']} | Số HĐ: {meta['so_no']}")
-            print(f"    - Ghi chú: {meta['remarks_clean']}")
-            print(f"    - Tiền chưa VAT: {amount:,.0f} VND | Thuế VAT: {vat:,.0f} VND | Tổng: {total:,.0f} VND")
-            print(f"    - File: {meta['formatted_name']}.pdf\n")
+                print(f"[{idx}/{len(items)}] ĐÃ TẢI & ĐỔI TÊN THÀNH CÔNG:")
+                print(f"    - Ngày HĐ: {ngay_hd} | Ngày ký: {meta['ngay_ky_raw']} | Số HĐ: {meta['so_no']}")
+                print(f"    - Ghi chú: {meta['remarks_clean']}")
+                print(f"    - Tiền chưa VAT: {amount:,.0f} VND | Thuế VAT: {vat:,.0f} VND | Tổng: {total:,.0f} VND")
+                print(f"    - File: {meta['formatted_name']}.pdf\n")
             
-            processed_list.append({
-                'ngay_hd': ngay_hd,
-                'ngay_hd_iso': ngay_hd_iso,
-                'ngay_ky': meta['ngay_ky_raw'],
-                'serialNo': item['serialNo'],
-                'so_no': meta['so_no'],
-                'remarks': meta['remarks_clean'],
-                'formatted_name': meta['formatted_name'],
-                'amount': amount,
-                'vat': vat,
-                'total': total,
-                'pdf_path': pdf_path,
-                'xml_path': xml_path
-            })
+                processed_list.append({
+                    'ngay_hd': ngay_hd,
+                    'ngay_hd_iso': ngay_hd_iso,
+                    'ngay_ky': meta['ngay_ky_raw'],
+                    'serialNo': item['serialNo'],
+                    'so_no': meta['so_no'],
+                    'remarks': meta['remarks_clean'],
+                    'formatted_name': meta['formatted_name'],
+                    'amount': amount,
+                    'vat': vat,
+                    'total': total,
+                    'pdf_path': pdf_path,
+                    'xml_path': xml_path
+                })
             
-        browser.close()
+                if progress_callback:
+                    progress_callback({
+                        "status": "downloading",
+                        "total": len(items),
+                        "current": idx,
+                        "invoice_no": meta['so_no'],
+                        "message": f"[{idx}/{len(items)}] Đã tải HĐ {meta['so_no']} ({meta['remarks_clean'][:40]})"
+                    })
+        finally:
+            browser.close()
         
     # 4. Tự động hạch toán vào SQLite
     if sync_db and processed_list:
@@ -424,6 +461,16 @@ def run_direct_api(month_str="10/2026", account="", fee_only=False, headed=False
     print("="*85)
     print(f"  HOÀN THÀNH: XỬ LÝ {len(processed_list)}/{len(items)} HÓA ĐƠN THÁNG {month_str} TRONG {elapsed:.2f} GIÂY!")
     print("="*85 + "\n")
+    
+    if progress_callback:
+        progress_callback({
+            "status": "completed",
+            "total": len(items),
+            "current": len(processed_list),
+            "elapsed_seconds": round(elapsed, 2),
+            "message": f"Hoàn thành: Đã tải {len(processed_list)}/{len(items)} hóa đơn tháng {month_str} trong {elapsed:.1f}s!"
+        })
+        
     return processed_list
 
 if __name__ == '__main__':

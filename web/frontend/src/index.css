@@ -2,167 +2,169 @@
 
 @theme {
   /* ============================================================
-     IMPECCABLE NEO KINPAKU OKLCH COLOR SYSTEM
-     Reference: https://github.com/pbakaus/impeccable.git
-     Brand Anchors: Kinpaku Gold & Verdigris Patina
-     Surfaces: Dark Warm-Black Lacquer & Raised Inset Instruments
+     CHESTNUT & VANILLA EDITORIAL PALETTE SYSTEM
+     Source Image Swatches:
+       1. Chestnut: HEX #964B34 | RGB 150 75 52 (Rich Terracotta Chestnut)
+       2. Vanilla:  HEX #E9DF9E | RGB 233 223 158 (Buttery Warm Custard Vanilla)
+
+     Light Architecture:
+       --color-bg: #FAF7EC (Soft Luminous Vanilla-Paper Ground)
+       --color-surface: #ffffff (Crisp Warm White Surface Panel)
+       --color-surface-hover: #F5EFCB (Tone Hover Step - Vanilla Soft)
+       --color-surface-active: #E9DF9E (Tone Active Step - Exact Vanilla)
+       --color-ink: #2D150E (Deep Roasted Chestnut Ink - High Contrast AAA > 14:1)
+       --color-muted: #6D4236 (Warm Chestnut Umber Text)
+       --color-faint: #99756B (Soft Chestnut Clay Tan)
      ============================================================ */
 
-  /* Lacquer Dark Surfaces */
-  --color-lacquer: oklch(9.5% 0.008 85);         /* page ground: warm obsidian lacquer */
-  --color-lacquer-deep: oklch(6.5% 0.006 85);    /* deep well, sunk tracks, terminal */
-  --color-raised: oklch(13.5% 0.01 85);          /* elevated panels, sidebar, cards */
-  --color-raised-hover: oklch(16.5% 0.012 85);   /* interactive surface hover */
-  --color-graphite: oklch(18.5% 0.012 85);       /* inputs, chips, inactive control well */
-  --color-graphite-2: oklch(23.5% 0.014 85);     /* active instrument cap, secondary button */
+  /* Pure Role-based Color Ramp */
+  --color-bg: #FAF7EC;
+  --color-surface: #ffffff;
+  --color-surface-hover: #F5EFCB;
+  --color-surface-active: #E9DF9E;
+  --color-ink: #2D150E;
+  --color-muted: #6D4236;
+  --color-faint: #99756B;
 
-  /* Kinpaku Gold (Primary Brand Anchor & Action) */
-  --color-kinpaku: oklch(84% 0.19 80.46);        /* brand gold mark, primary CTA, active tab */
-  --color-kinpaku-vivid: oklch(88% 0.20 85);     /* lit hover on gold */
-  --color-kinpaku-pale: oklch(86% 0.07 84);      /* soft gold tint */
-  --color-kinpaku-rich: oklch(77% 0.13 82);      /* gold hairline, active rules */
-  --color-kinpaku-deep: oklch(61% 0.085 78);     /* deep gold border against dark */
-  --color-on-gold: oklch(14% 0.018 95);          /* high-contrast dark ink on gold fill */
+  /* Primary Accent: Exact Chestnut (#964B34) */
+  --color-accent: #964B34;
+  --color-accent-ink: #ffffff;
+  --color-accent-hover: #7E3B27;
 
-  /* Verdigris Patina (Secondary Anchor, State & Selection) */
-  --color-patina: oklch(70% 0.12 188);           /* selection, bank balance, links, indicator */
-  --color-patina-pale: oklch(82% 0.07 188);      /* soft patina fill behind selected rows */
-  --color-patina-deep: oklch(52% 0.12 188);      /* readable patina text */
+  /* Swatch-specific Named Tokens */
+  --color-chestnut: #964B34;
+  --color-chestnut-dark: #773724;
+  --color-chestnut-deep: #572517;
+  --color-chestnut-light: #B06048;
+  --color-vanilla: #E9DF9E;
+  --color-vanilla-soft: #F5EFCB;
+  --color-vanilla-paper: #FAF7EC;
+  --color-border: #E4D8A7;
 
-  /* Text & Ink Ramp (High WCAG AAA Contrast) */
-  --color-champagne: oklch(94% 0.005 85);        /* headlines, key metrics, active nav */
-  --color-warm: oklch(89% 0.006 85);             /* body copy */
-  --color-muted: oklch(72% 0.008 85);            /* captions, metadata, eyebrows */
-  --color-faint: oklch(56% 0.008 85);            /* subdued metadata, table headers */
-  --color-disabled: oklch(42% 0.006 85);         /* disabled controls */
-
-  /* Semantics */
-  --color-vermilion: oklch(62% 0.19 35);         /* warning, stale legal notice, error */
-  --color-success: oklch(72% 0.16 150);          /* balanced ledger, verified TT 99 */
+  /* Semantic Compatibility Aliases */
+  --color-teal-deep: #964B34;
+  --color-teal-sea: #B06048;
+  --color-jade: #7E3B27;
+  --color-mint: #E9DF9E;
+  --color-celadon: #F5EFCB;
+  --color-dew: #E9DF9E;
+  --color-spice: #B06048;
+  --color-crimson: #BD3A2B;
+  --color-danger: #BD3A2B;
+  --color-patina: #964B34;
+  --color-vermilion: #BD3A2B;
+  --color-success: #964B34;
 }
 
 @layer base {
   :root {
-    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-    --font-display: 'Syne', 'Plus Jakarta Sans', sans-serif;
+    --bg: #FAF7EC;
+    --surface: #ffffff;
+    --surface-hover: #F5EFCB;
+    --surface-active: #E9DF9E;
+    --ink: #2D150E;
+    --muted: #6D4236;
+    --faint: #99756B;
 
-    /* Impeccable Variables for pure CSS access */
-    --ks-lacquer: oklch(9.5% 0.008 85);
-    --ks-lacquer-deep: oklch(6.5% 0.006 85);
-    --ks-raised: oklch(13.5% 0.01 85);
-    --ks-graphite: oklch(18.5% 0.012 85);
-    --ks-graphite-2: oklch(23.5% 0.014 85);
+    --accent: #964B34;
+    --accent-ink: #ffffff;
+    --accent-hover: #7E3B27;
 
-    --ks-kinpaku: oklch(84% 0.19 80.46);
-    --ks-kinpaku-vivid: oklch(88% 0.20 85);
-    --ks-kinpaku-rich: oklch(77% 0.13 82);
-    --ks-on-gold: oklch(14% 0.018 95);
+    --chestnut: #964B34;
+    --chestnut-dark: #773724;
+    --chestnut-deep: #572517;
+    --chestnut-light: #B06048;
+    --vanilla: #E9DF9E;
+    --vanilla-soft: #F5EFCB;
+    --vanilla-paper: #FAF7EC;
+    --border: #E4D8A7;
 
-    --ks-patina: oklch(70% 0.12 188);
-    --ks-patina-pale: oklch(82% 0.07 188);
-    --ks-patina-deep: oklch(52% 0.12 188);
+    --teal-deep: #964B34;
+    --teal-sea: #B06048;
+    --jade: #7E3B27;
+    --mint: #E9DF9E;
+    --celadon: #F5EFCB;
+    --dew: #E9DF9E;
 
-    --ks-champagne: oklch(94% 0.005 85);
-    --ks-text-warm: oklch(89% 0.006 85);
-    --ks-text-muted: oklch(72% 0.008 85);
-    --ks-text-faint: oklch(56% 0.008 85);
+    --font-sans: 'Switzer', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace; /* taste-skill-ignore: variable definition for code tags */
 
-    --ks-rule: oklch(100% 0 0 / 0.08);
-    --ks-edge: oklch(100% 0 0 / 0.18);
-    --ks-gold-line: oklch(84% 0.19 80.46 / 0.25);
-    --ks-patina-line: oklch(70% 0.12 188 / 0.25);
+    --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+    --step-body: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
+    --step-lead: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+    --step-head: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+
+    --margin: clamp(1rem, 2.2vw, 2rem);
+    --gutter: clamp(0.75rem, 1.4vw, 1.5rem);
+    --radius: 12px;
+
+    color-scheme: light;
   }
 
   body {
     font-family: var(--font-sans);
-    background-color: var(--ks-lacquer);
-    color: var(--ks-text-warm);
+    background-color: var(--bg);
+    color: var(--ink);
+    font-size: var(--step-body);
+    line-height: 1.5;
     letter-spacing: -0.01em;
     min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
-  /* Custom high-precision scrollbars */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: var(--ks-lacquer-deep);
-  }
-  ::-webkit-scrollbar-thumb {
-    background: oklch(100% 0 0 / 0.14);
-    border-radius: 9999px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: oklch(84% 0.19 80.46 / 0.4);
-  }
-
-  /* Interactive Elements Focus Ring Standards (Impeccable gold/patina WCAG 2.2 compliant) */
+  /* Focus ring following taste-skill standards: 2px solid accent with offset */
   button:focus-visible, 
   input:focus-visible, 
   select:focus-visible, 
   textarea:focus-visible, 
   a:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--ks-lacquer), 0 0 0 4px var(--ks-kinpaku);
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--bg);
   }
 }
 
-/* Hairline border utilities (impeccable micro-rules) */
-.border-hairline {
-  border-width: 1px;
-  border-color: oklch(100% 0 0 / 0.08);
-}
-
-.border-hairline-gold {
-  border-width: 1px;
-  border-color: oklch(84% 0.19 80.46 / 0.25);
-}
-
-.border-hairline-patina {
-  border-width: 1px;
-  border-color: oklch(70% 0.12 188 / 0.25);
-}
-
-/* Double-Bezel Architecture (Doppelrand with Impeccable Kinpaku Gold) */
-.double-bezel {
-  padding: 0.375rem;
-  border-radius: 1rem;
-  background: oklch(100% 0 0 / 0.02);
-  border: 1px solid oklch(100% 0 0 / 0.08);
-  box-shadow: 0 0 0 1px oklch(0% 0 0 / 0.6), 0 20px 40px -15px oklch(0% 0 0 / 0.7);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.double-bezel:hover {
-  border-color: oklch(84% 0.19 80.46 / 0.35);
-  box-shadow: 0 0 0 1px oklch(0% 0 0 / 0.6), 0 20px 40px -15px oklch(0% 0 0 / 0.7), 0 0 25px -5px oklch(84% 0.19 80.46 / 0.15);
-}
-
-.double-bezel-inner {
-  border-radius: calc(1rem - 0.375rem);
-  background: var(--ks-raised);
-  backdrop-filter: blur(20px);
-  border: 1px solid oklch(100% 0 0 / 0.06);
-  box-shadow: inset 0 1px 1px 0 oklch(100% 0 0 / 0.08);
-}
-
-/* Impeccable Kinpaku & Patina Glow Effects */
-.glow-gold {
-  box-shadow: 0 0 35px -5px oklch(84% 0.19 80.46 / 0.25);
-}
-
-.glow-patina {
-  box-shadow: 0 0 35px -5px oklch(70% 0.12 188 / 0.25);
-}
-
 /* Tabular figures for accounting numbers */
-.tabular-nums {
+.nums, .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* Impeccable Motion Compliance: preserves feedback without jarring flash */
+/* Custom quiet scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 75, 52, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 75, 52, 0.5);
+}
+
+/* Taste-skill layout classes */
+.wrap {
+  padding-inline: var(--margin);
+}
+
+.panel {
+  background-color: var(--surface);
+  border-radius: var(--radius);
+}
+
+.panel-hover:hover {
+  background-color: var(--surface-hover);
+}
+
+/* Accessible reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.05s !important;

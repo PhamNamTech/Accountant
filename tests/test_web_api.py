@@ -63,6 +63,28 @@ def test_api_parse_xml():
     assert data["so_hoa_don"] == "0000015"
     print(f" -> PASS: /api/invoices/parse-xml (HĐ: {data['so_hoa_don']})")
 
+def test_api_bank_invoices():
+    res_m = client.get("/api/bank-invoices/months")
+    assert res_m.status_code == 200
+    months = res_m.json()["months"]
+    assert len(months) >= 1
+    
+    res_l = client.get(f"/api/bank-invoices/list?month={months[0]}")
+    assert res_l.status_code == 200
+    data = res_l.json()
+    assert "invoices" in data
+    assert "summary" in data
+    print(f" -> PASS: /api/bank-invoices/list ({months[0]}: {data['summary']['total_invoices']} hóa đơn VCB)")
+
+def test_api_download_status():
+    res = client.get("/api/bank-invoices/download-status")
+    assert res.status_code == 200
+    data = res.json()
+    assert "is_running" in data
+    assert "status" in data
+    assert "logs" in data
+    print(f" -> PASS: /api/bank-invoices/download-status (Status: {data['status']})")
+
 if __name__ == "__main__":
     print("=== KIỂM THỬ WEB API FASTAPI ===")
     test_api_health()
@@ -70,4 +92,6 @@ if __name__ == "__main__":
     test_api_cost_calculate()
     test_api_journal_entries()
     test_api_parse_xml()
-    print("=== TOÀN BỘ 5 BÀI TEST API HOÀN THÀNH XUẤT SẮC 100% ===")
+    test_api_bank_invoices()
+    test_api_download_status()
+    print("=== TOÀN BỘ 7 BÀI TEST API HOÀN THÀNH XUẤT SẮC 100% ===")

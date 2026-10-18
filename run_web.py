@@ -9,6 +9,11 @@ import sys
 import webbrowser
 import uvicorn
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
@@ -18,7 +23,7 @@ if __name__ == "__main__":
     port = 8000
     url = f"http://{host}:{port}"
     print("=" * 70)
-    print("   HỆ THỐNG TRỢ LÝ KẾ TOÁN AI & GIÁ THÀNH DOANH NGHIỆP VIỆT NAM")
+    print("   HỆ THỐNG TỰ ĐỘNG HÓA HÓA ĐƠN BANK VIETCOMBANK (XML & PDF)")
     print(f"   Khởi động máy chủ Web tại: {url}")
     print(f"   Tài liệu Swagger API tại:   {url}/docs")
     print("=" * 70)

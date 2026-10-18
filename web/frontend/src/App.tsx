@@ -1,91 +1,61 @@
-import React, { useState } from 'react';
-import { Sidebar } from './components/Sidebar';
-import { TopHeader } from './components/TopHeader';
-import { DashboardOverview } from './components/DashboardOverview';
-import { AccountLookup } from './components/AccountLookup';
-import { InvoiceParserView } from './components/InvoiceParserView';
-import { CostAccountingView } from './components/CostAccountingView';
-import { GeneralJournalView } from './components/GeneralJournalView';
-import { BankReconciliationView } from './components/BankReconciliationView';
-import { BeancountView } from './components/BeancountView';
-import { LegalBasisView } from './components/LegalBasisView';
-import { CommandPalette } from './components/CommandPalette';
-import { TabId } from './components/Navbar';
-import { ExternalLink, ShieldCheck } from 'lucide-react';
+import React from 'react';
+import { BankInvoicesView } from './components/BankInvoicesView';
+import { Building2, Sparkles, ExternalLink } from 'lucide-react';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   return (
-    <div className="min-h-screen bg-lacquer text-champagne flex font-sans antialiased selection:bg-kinpaku/20 selection:text-kinpaku">
+    <div className="min-h-[100dvh] bg-bg text-ink flex flex-col antialiased">
       
-      {/* 1. Left Enterprise Navigation Sidebar */}
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-      />
-
-      {/* 2. Main Workspace Layout (Padded left by 64 on desktop) */}
-      <div className="lg:pl-64 flex-1 flex flex-col min-w-0 min-h-screen bg-lacquer">
-        
-        {/* Top Header App Bar */}
-        <TopHeader
-          activeTab={activeTab}
-          onOpenSidebar={() => setIsSidebarOpen(true)}
-          onOpenSearch={() => setIsSearchOpen(true)}
-        />
-
-        {/* Workspace Body */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1600px] w-full mx-auto">
-          {activeTab === 'overview' && <DashboardOverview setActiveTab={setActiveTab} />}
-          {activeTab === 'accounts' && <AccountLookup />}
-          {activeTab === 'invoices' && <InvoiceParserView />}
-          {activeTab === 'cost' && <CostAccountingView />}
-          {activeTab === 'journal' && <GeneralJournalView />}
-          {activeTab === 'reconcile' && <BankReconciliationView />}
-          {activeTab === 'beancount' && <BeancountView />}
-          {activeTab === 'legal' && <LegalBasisView />}
-        </main>
-
-        {/* Enterprise Footer */}
-        <footer className="mt-auto border-t border-hairline bg-lacquer-deep py-4 px-6 text-xs text-muted font-mono">
-          <div className="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-champagne tracking-wide">KETOAN·VN</span>
-              <span className="text-faint">·</span>
-              <span className="text-muted">Vietnam Accounting AI Suite</span>
-              <span className="text-faint">·</span>
-              <span className="text-kinpaku font-semibold">TT 99/2025/TT-BTC</span>
+      {/* Top Header */}
+      <header className="h-16 px-4 sm:px-8 bg-surface shadow-2xs flex items-center justify-between sticky top-0 z-30">
+        <div className="max-w-6xl w-full mx-auto flex items-center justify-between">
+          
+          {/* Logo & Brand */}
+          <div className="flex items-center gap-3 select-none">
+            <div className="w-9 h-9 rounded-xl bg-surface-hover flex items-center justify-center text-accent">
+              <Sparkles className="w-5 h-5" />
             </div>
-
-            <div className="flex items-center gap-4 text-[11px]">
-              <a
-                href="/docs"
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted hover:text-kinpaku transition-colors flex items-center gap-1"
-              >
-                <span>Swagger API (/docs)</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
-              <span className="text-faint">·</span>
-              <span className="text-patina font-semibold">Chuẩn VAS 02</span>
+            <div>
+              <span className="font-bold text-sm sm:text-base tracking-tight text-ink">
+                KETOAN<span className="text-accent">·VN</span>
+              </span>
+              <span className="hidden sm:inline-block text-xs text-muted ml-2 pl-2 border-l border-border">
+                Tự động hóa Hóa đơn Ngân hàng Vietcombank
+              </span>
             </div>
           </div>
-        </footer>
 
-      </div>
+          {/* Quick API Docs Link */}
+          <a
+            href="/docs"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bg hover:bg-surface-hover text-xs text-muted hover:text-ink transition-colors"
+          >
+            <span>Swagger API</span>
+            <ExternalLink className="w-3.5 h-3.5 text-faint" />
+          </a>
 
-      {/* 3. Global Command Palette (⌘K) */}
-      <CommandPalette
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        setActiveTab={setActiveTab}
-      />
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto">
+        <BankInvoicesView />
+      </main>
+
+      {/* Minimal Footer */}
+      <footer className="mt-auto py-5 px-6 text-xs text-muted bg-surface/50 border-t border-border/40">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Building2 className="w-3.5 h-3.5 text-accent" />
+            <span>Thư mục lưu trữ: <code>data/chung_tu/hoa_don_bank/</code></span>
+          </div>
+          <span className="text-faint text-[11px]">
+            Tự động giải mã AES-128-CBC &amp; tải tệp XML, PDF từ Vietcombank
+          </span>
+        </div>
+      </footer>
 
     </div>
   );
