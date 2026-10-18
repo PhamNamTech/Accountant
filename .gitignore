@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Node / JS dependencies & builds
+node_modules/
+dist/
+dist-ssr/
+*.local
+
 # Environment variables & secrets (Bảo mật thông tin ngân hàng & API key)
 .env
 .env.*
@@ -20,7 +26,7 @@ tests/test_output/
 # Corporate data isolation (Bảo vệ chứng từ, hóa đơn ngân hàng, sổ sách thực tế)
 data/
 Hach toan/
-sources/*.pdf
+sources/
 
 # Playwright browser cache
 .playwright/

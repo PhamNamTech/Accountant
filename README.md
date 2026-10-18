@@ -112,3 +112,33 @@ flowchart LR
     F --> G["Tính giá thành Z, z<br/>(VAS 02)"]
     G --> H["Thẻ tính giá thành & Sổ cái<br/>(Excel Reports)"]
 ```
+
+---
+
+## 5. HỆ THỐNG GIAO DIỆN WEB (VIETNAM ACCOUNTING WEB SUITE)
+
+Hệ thống được trang bị giao diện Web trực quan cao cấp tích hợp:
+- **3D & Hiệu ứng tương tác**: Three.js, React Three Fiber & Antigravity physics (`@designcodeio/threeui`).
+- **Đồ họa Isometric**: Thư viện tương tác chuột isometric (`@lucasmarkes/hairline`) minh họa luồng chi phí và trạng thái kho quỹ.
+- **Design System & Micro-interactions**: Phong cách Glassmorphism & Bento-grid của `lucianlabs.dev`.
+- **Backend API**: FastAPI bọc toàn bộ lõi kế toán `ketoan_server.py`, hỗ trợ Swagger API (`/docs`).
+
+### Cách khởi động Web App:
+- **Khởi động với Python FastAPI (Khuyến nghị)**:
+  ```bash
+  python run_web.py
+  ```
+- **Khởi động với Node.js / Express (TypeScript Core)**:
+  ```bash
+  npm start
+  ```
+Mở trình duyệt truy cập: `http://127.0.0.1:8000`
+- **Tài liệu API Swagger**: `http://127.0.0.1:8000/docs` (chế độ FastAPI)
+- **Chế độ Dev Frontend**: `cd web/frontend && npm run dev` (cổng 3000)
+
+### Kiểm thử hệ thống (Test Suites):
+- Kiểm thử Python toàn diện: `python tests/run_all_tests.py`
+- Kiểm thử Web API: `python tests/test_web_api.py`
+- Kiểm thử TypeScript Core: `npm test`
+
+
