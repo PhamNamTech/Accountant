@@ -96,6 +96,16 @@ Tuyệt đối không áp dụng cứng nhắc một tiêu chí ngày giao dịc
 - Tránh trích nguyên văn cả đoạn dài từ trí nhớ vì dễ sai lệch từ ngữ pháp lý; hãy diễn giải trung thực nội dung cốt lõi của điều luật.
 - **Quy tắc liêm chính về nguồn kiểm chứng (Verification Integrity Rule):** Agent chỉ được phép gắn nhãn hoặc khẳng định "Đã đối chiếu văn bản gốc Cấp 1" khi trong nhật ký phiên làm việc (tool logs) có bằng chứng công cụ thực tế truy xuất thành công và đọc trực tiếp toàn văn văn bản gốc từ cổng thông tin Cấp 1 (kèm URL chính xác đã đọc và timestamp thực hiện). Mọi trường hợp chưa trực tiếp đọc văn bản gốc đều bắt buộc phải ghi rõ: `Chưa đối chiếu văn bản gốc (Kiến thức nền / Nguồn Cấp 2)` và tuyệt đối không tạo ngày rà soát giả mạo.
 
+### E. Quy tắc TỰ ĐỘNG tra cứu Kho tri thức NotebookLM (Gemini Notebook):
+- **Nguyên tắc cốt lõi:** Người dùng đã kết nối kho tri thức NotebookLM cá nhân vào Antigravity. Khi giải quyết các câu hỏi, nghiệp vụ hoặc phân tích liên quan đến **Kế toán, kiểm toán, thuế, hóa đơn, pháp luật (Thông tư 99/2025, Thông tư 24/2024, Luật Thuế GTGT 48/2024, Luật TNDN 67/2025, IFRS/VFRS...)**, agent **BẮT BUỘC CHỦ ĐỘNG TỰ ĐỘNG TRA CỨU** mà **KHÔNG ĐỢI NGƯỜI DÙNG NHẮC NHỞ**.
+- **Kho tri thức áp dụng:**
+  - Notebook: **"Quy định kế toán và kiểm toán mới"**
+  - Notebook ID: `b3ca6a56-cdb6-42a6-a279-91fddd4f2901`
+- **Quy trình thực thi:**
+  Trước khi tạo câu trả lời cho các vấn đề nghiệp vụ chuyên sâu, agent chủ động chạy lệnh:
+  `node f:/Accountant/tools/ask_notebook.mjs "b3ca6a56-cdb6-42a6-a279-91fddd4f2901" "<câu hỏi nghiệp vụ>"`
+  (hoặc gọi tool MCP `notebooklm` khi có sẵn). Trích xuất các nguồn đối chiếu và câu trả lời được kiểm chứng từ NotebookLM vào nội dung phản hồi.
+
 ---
 
 ## 3. THÔNG TIN CẦN XÁC ĐỊNH TRƯỚC KHI TRẢ LỜI & QUY TẮC GIẢ ĐỊNH
@@ -171,6 +181,34 @@ Agent bắt buộc đối soát logic trước khi đưa kết quả cho ngườ
 ### E. Bảo mật dữ liệu & Quyền riêng tư (Privacy & Data Protection):
 - Dữ liệu kế toán chứa thông tin nhạy cảm: Mã số thuế (MST), Căn cước công dân (CCCD), họ tên nhân sự, mức lương và thông tin ngân hàng.
 - **Nguyên tắc bảo vệ:** Tuyệt đối không gửi dữ liệu nhạy cảm ra ngoài phạm vi phiên làm việc; khi làm ví dụ minh họa hoặc file mẫu, chủ động làm mờ/ẩn số liệu nhạy cảm (Ví dụ: MST `0101234xxx`, `Nguyễn Văn A`, Lương `**0.000.000 VND`).
+
+### F. Quy tắc sử dụng bộ công cụ và kỹ năng OfficeCLI (Word, Excel, PowerPoint):
+1. **Năng lực cốt lõi của OfficeCLI:**
+   - `OfficeCLI` là công cụ dòng lệnh (single binary tại `%LOCALAPPDATA%\OfficeCLI\officecli.exe`) cho phép AI Agent trực tiếp tạo mới, đọc cấu trúc (DOM), sửa đổi và kiểm tra lỗi tài liệu Office (`.docx`, `.xlsx`, `.pptx`) mà không cần cài đặt phần mềm Microsoft Office.
+   - **Tính năng Visual Verification ("Mắt nhìn cho AI"):** Lệnh `officecli view <file> html` hoặc `officecli watch <file>` kết xuất giao diện trực quan chuẩn xác dạng HTML/PNG, giúp agent kiểm tra bố cục, căn chỉnh bảng biểu, màu sắc và công thức trước khi bàn giao.
+2. **Khi nào Agent sử dụng OfficeCLI và các kỹ năng chuyên biệt?**
+   - **Tạo & Thao tác Bảng tính Excel (`.xlsx`):**
+     * *Bảng tính chung, tổng hợp dữ liệu, Pivot Table, kiểm tra lỗi công thức:* Sử dụng skill `officecli-xlsx` (lệnh `officecli ... file.xlsx`).
+     * *Mô hình Tài chính & Định giá (Financial Model):* Bắt buộc sử dụng skill `officecli-financial-model` khi xây dựng mô hình 3 báo cáo tài chính (P&L, Balance Sheet, Cash Flow), mô hình DCF, WACC, IRR/XIRR, phân tích độ nhạy (sensitivity analysis), kịch bản (Base/Upside/Downside). Tuân thủ nghiêm ngặt kiến trúc 3 vùng (Inputs $\rightarrow$ Calc $\rightarrow$ Outputs), 4 chuẩn màu CFO (xanh dương: input, đen: formula, xanh lá: cross-sheet, vàng: assumption), tuyệt đối không hardcode số vào công thức.
+     * *Bảng điều khiển Quản trị (Data Dashboard):* Sử dụng skill `officecli-data-dashboard` khi chuyển đổi dữ liệu kế toán/doanh thu/chi phí thành Dashboard trực quan gồm KPI cards, biểu đồ, sparklines và conditional formatting.
+   - **Soạn thảo Văn bản & Báo cáo Word (`.docx`):**
+     * *Báo cáo tài chính, báo cáo kiểm toán, thuyết minh, công văn:* Sử dụng skill `officecli-docx`.
+     * *Biểu mẫu nhập liệu, hợp đồng, biên bản bàn giao có khóa bảo vệ:* Sử dụng skill `officecli-word-form` (sử dụng Content Controls `w:sdt`, FormField và Document Protection).
+     * *Báo cáo học thuật, đề tài nghiên cứu kế toán:* Sử dụng skill `officecli-academic-paper` (chuẩn APA/IEEE, số hóa phương trình LaTeX, đánh số bảng/hình).
+   - **Trình bày Slide Báo cáo Ban Giám đốc & Thuyết trình (`.pptx`):**
+     * *Slide báo cáo tài chính định kỳ, kết quả kinh doanh:* Sử dụng skill `officecli-pptx`.
+     * *Slide gọi vốn, thuyết trình nhà đầu tư (Pitch Deck):* Sử dụng skill `officecli-pitch-deck`.
+     * *Slide hiệu ứng chuyển động Morph điện ảnh:* Sử dụng skill `morph-ppt` hoặc `morph-ppt-3d`.
+3. **Phân định phạm vi giữa OfficeCLI, Excel-MCP và Python Scripts:**
+   - **`OfficeCLI`:** Ưu tiên số 1 khi tạo mới, phân tích cấu trúc, chỉnh sửa chuyên sâu và trực quan hóa các file `.xlsx`, `.docx`, `.pptx`.
+   - **`excel-mcp`:** Sử dụng khi cần thao tác trực tiếp qua giao thức MCP với bảng tính đang mở trong phiên làm việc.
+   - **Script Python (`openpyxl`, `python-docx`):** Dùng cho các luồng xử lý xuất file định dạng sẵn theo template cố định (như Mẫu S03a-DN, Thẻ tính giá thành trong `tests/` hoặc `tools/`).
+4. **Kỷ luật thực thi lệnh OfficeCLI trên Windows (PowerShell):**
+   - Lệnh gọi: `officecli` (hoặc `& "$env:LOCALAPPDATA\OfficeCLI\officecli.exe"` nếu terminal chưa cập nhật PATH).
+   - Luôn bao bọc đường dẫn phần tử trong dấu nháy kép: `"/Sheet1/row[1]"`, `'/slide[1]'`.
+   - Chuỗi định dạng số có ký hiệu tiền tệ `$` bắt buộc đặt trong nháy đơn để tránh nuốt biến trong PowerShell (ví dụ: `'numFmt=$#,##0'`).
+   - Luôn chạy `officecli view <file> issues` hoặc `officecli validate <file>` để kiểm tra tính toàn vẹn OpenXML trước khi hoàn tất.
+   - Đóng phiên làm việc bằng `officecli close <file>` để lưu đĩa an toàn.
 
 ---
 

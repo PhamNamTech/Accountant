@@ -12,7 +12,16 @@ F:\Accountant
 │   └── skills/
 │       ├── doi-soat-ngan-hang/     # Kỹ năng đối soát sao kê ngân hàng & Sổ TK 112
 │       ├── ke-toan-gia-thanh/      # Quy trình phân bổ SXC & tính giá thành sản phẩm (Z, z)
-│       └── xu-ly-hoa-don/          # Kỹ năng bóc tách hóa đơn XML & PDF điện tử
+│       ├── xu-ly-hoa-don/          # Kỹ năng bóc tách hóa đơn XML & PDF điện tử
+│       ├── officecli/              # Bộ công cụ dòng lệnh Office đa năng (.docx, .xlsx, .pptx)
+│       ├── officecli-xlsx/         # Thao tác Excel nâng cao, công thức, Pivot Table, kiểm tra lỗi
+│       ├── officecli-financial-model/ # Mô hình tài chính 3 báo cáo (P&L, BS, CF), DCF, định giá
+│       ├── officecli-data-dashboard/  # Bảng điều khiển KPI Dashboard quản trị doanh thu/chi phí
+│       ├── officecli-docx/         # Soạn thảo báo cáo, thuyết minh tài chính, công văn (.docx)
+│       ├── officecli-word-form/    # Soạn thảo hợp đồng, biên bản bàn giao có trường khóa bảo vệ
+│       ├── officecli-pptx/         # Slide báo cáo tài chính định kỳ, kết quả kinh doanh (.pptx)
+│       ├── officecli-pitch-deck/   # Slide gọi vốn nhà đầu tư (Pitch Deck)
+│       └── morph-ppt/              # Slide hiệu ứng chuyển động Morph điện ảnh
 │
 ├── data/                           # Toàn bộ dữ liệu nghiệp vụ kế toán thực tế (Data Isolation)
 │   ├── chung_tu/                   # Chứng từ gốc & hóa đơn đầu vào / ngân hàng
@@ -140,5 +149,33 @@ Mở trình duyệt truy cập: `http://127.0.0.1:8000`
 - Kiểm thử Python toàn diện: `python tests/run_all_tests.py`
 - Kiểm thử Web API: `python tests/test_web_api.py`
 - Kiểm thử TypeScript Core: `npm test`
+
+---
+
+## 6. BỘ CÔNG CỤ & KỸ NĂNG OFFICELI CHO AI AGENT
+
+Dự án tích hợp bộ công cụ dòng lệnh **OfficeCLI** (single binary, không cần cài Microsoft Office) và các kịch bản kỹ năng (`.agents/skills/`) giúp AI Agent đọc, tạo, phân tích và trực quan hóa tài liệu Office:
+
+| Kỹ năng chuyên biệt | Loại tệp | Kịch bản & Dấu hiệu nhận diện (Triggers) |
+| :--- | :---: | :--- |
+| **`officecli-xlsx`** | `.xlsx` | Bảng tính, công thức kế toán, hàm tài chính, Pivot Table, kiểm tra lỗi `#REF!`, `#DIV/0!`. |
+| **`officecli-financial-model`** | `.xlsx` | Mô hình tài chính 3 báo cáo (P&L, BS, CF), định giá DCF, WACC, IRR, phân tích độ nhạy (Sensitivity Analysis), kịch bản doanh thu/chi phí. |
+| **`officecli-data-dashboard`** | `.xlsx` | Bảng điều khiển quản trị, KPI cards, sparklines, biểu đồ tài chính tự động từ CSV/Excel. |
+| **`officecli-docx`** | `.docx` | Soạn thảo văn bản, báo cáo tài chính thuyết minh, báo cáo kiểm toán, công văn giải trình. |
+| **`officecli-word-form`** | `.docx` | Tạo hợp đồng, biên bản bàn giao, biểu mẫu có trường khóa bảo vệ (`w:sdt`, Content Controls). |
+| **`officecli-academic-paper`** | `.docx` | Đề tài nghiên cứu kế toán, luận văn, định dạng học thuật APA/IEEE, công thức LaTeX. |
+| **`officecli-pptx`** | `.pptx` | Slide báo cáo kết quả kinh doanh định kỳ, báo cáo Ban Giám đốc/HĐQT. |
+| **`officecli-pitch-deck`** | `.pptx` | Slide gọi vốn, thuyết trình nhà đầu tư (Seed, Series A-C, SAFE). |
+| **`morph-ppt` / `morph-ppt-3d`**| `.pptx` | Slide thuyết trình cao cấp với hiệu ứng chuyển động Morph điện ảnh hoặc mô hình 3D. |
+
+### Tính năng Visual Verification ("Mắt nhìn cho AI"):
+```bash
+# Xem trước tức thì dưới dạng HTML chuẩn xác (không cần web server)
+officecli view <file> html
+
+# Chế độ theo dõi trực tiếp và tự động cập nhật khi sửa file
+officecli watch <file>
+```
+
 
 
