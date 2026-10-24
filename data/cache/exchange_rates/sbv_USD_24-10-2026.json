@@ -1,0 +1,12 @@
+{
+  "currency": "USD",
+  "date": "24/10/2026",
+  "central_rate": 24260.0,
+  "buy_rate": 23400.0,
+  "sell_rate": 25473.0,
+  "source": "Ngân hàng Nhà nước Việt Nam (SBV)",
+  "source_url": "https://www.sbv.gov.vn",
+  "source_note": "Dữ liệu tham chiếu chuẩn SBV (Offline fallback)",
+  "legal_basis": "Thông tư số 02/2021/TT-NHNN và quy chế quản lý tỷ giá hối đoái",
+  "timestamp": "2026-10-24T22:57:06.828444"
+}

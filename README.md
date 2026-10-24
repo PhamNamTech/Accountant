@@ -48,8 +48,12 @@ F:\Accountant
 │   ├── test_data/                  # Dữ liệu mẫu (Mock data: XML, PDF) phục vụ test
 │   └── test_output/                # Thư mục chứa file Excel kết quả test (.gitignore)
 │
-├── tools/                          # Các script tự động hóa & MCP Server kế toán
-│   ├── ketoan_server.py            # Model Context Protocol (MCP) Server cung cấp API kế toán
+├── tools/                          # Các script tự động hóa & Hệ thống MCP Server kế toán
+│   ├── ketoan_server.py            # MCP Server "ketoan-vn": Bóc tách hóa đơn XML/PDF, tính giá thành, tra cứu TK
+│   ├── vbpl_server.py              # MCP Server "vbpl-lookup": Tra cứu VBPL quốc gia, đối chiếu Cấp 1, staleness check
+│   ├── tax_verify_server.py        # MCP Server "tax-verify": Tra cứu MST, xác thực HĐĐT, rủi ro thuế, hạn nộp
+│   ├── finance_server.py           # MCP Server "finance-tools": Tỷ giá SBV/VCB, chênh lệch FX VAS 10, khấu hao TT 45, benchmark VSIC
+│   ├── bank_server.py              # MCP Server "bank-api": API ngân hàng trực tiếp, sao kê và đối soát TK 112
 │   ├── download_month_invoices.py  # Script tự động tải hóa đơn ngân hàng cả tháng qua API
 │   ├── download_vcb_invoice.py     # Script tải hóa đơn VCB theo ngày chỉ định
 │   ├── generate_test_pdf.py        # Script sinh hóa đơn PDF mẫu kiểm thử
@@ -83,23 +87,28 @@ F:\Accountant
 
 Hệ thống được trang bị bộ kiểm thử toàn diện bảo đảm mọi công cụ tính toán, bóc tách và tra cứu đều chuẩn xác 100%:
 
-### Cách chạy toàn bộ 8 bài kiểm thử:
+### Cách chạy toàn bộ 12 bài kiểm thử hệ thống:
 Từ thư mục gốc `F:\Accountant`, chạy lệnh:
 ```bash
 python run_all_tests.py
-# hoặc
-python tests/run_all_tests.py
 ```
 
-### Nội dung 8 bài kiểm thử:
-1. **Tra cứu tài khoản (lookup_accounting_account):** Xác minh nhận diện Chế độ Kế toán (`regime="TT99" | "TT200" | "TT133"`), phân biệt các tài khoản bãi bỏ và tài khoản đổi tên.
-2. **Bóc tách hóa đơn XML (parse_vietnamese_invoice_xml):** Trích xuất thông tin người bán, người mua, danh mục hàng hóa, thuế GTGT.
-3. **Xuất bảng kê Excel hàng loạt (batch_export_invoices_to_excel):** Quét thư mục hóa đơn và xuất file Excel 2 sheet (Tổng hợp & Chi tiết).
+### Nội dung các nhóm kiểm thử:
+**Phần 1: Bộ 8 bài test lõi kế toán truyền thống (`tests/run_all_tests.py`):**
+1. **Tra cứu tài khoản (lookup_accounting_account):** Nhận diện TT99, TT200, TT133, tài khoản bãi bỏ/đổi tên.
+2. **Bóc tách hóa đơn XML (parse_vietnamese_invoice_xml):** Trích xuất bên bán, bên mua, mặt hàng, thuế GTGT.
+3. **Xuất bảng kê Excel hàng loạt (batch_export_invoices_to_excel):** Quét hóa đơn và xuất Excel 2 sheet.
 4. **Cơ sở dữ liệu SQLite (ketoan.db):** Kiểm tra tính toàn vẹn giao dịch và cân đối Nợ - Có.
-5. **Sinh Sổ Nhật ký chung Excel:** Tạo sổ nhật ký chung chuẩn định dạng.
-6. **Bóc tách hóa đơn PDF (parse_vietnamese_invoice_pdf):** Trích xuất thông tin hóa đơn từ file PDF dạng scan/điện tử.
-7. **Kiểm tra Sổ cái Beancount (verify_beancount_ledger):** Xác minh tính hợp lệ và cân đối của sổ kế toán kép Plaintext.
-8. **Kế toán Giá thành theo các Chế độ (calculate_product_cost):** Tính giá thành $Z$, đơn giá $z$, phân bổ chi phí SXC theo VAS 02 và định khoản đúng theo từng thông tư.
+5. **Sinh Sổ Nhật ký chung Excel:** Tạo sổ nhật ký chung chuẩn định dạng Mẫu S03a-DN.
+6. **Bóc tách hóa đơn PDF (parse_vietnamese_invoice_pdf):** Trích xuất thông tin hóa đơn scan/điện tử.
+7. **Kiểm tra Sổ cái Beancount (verify_beancount_ledger):** Xác minh cân đối sổ kế toán kép Plaintext.
+8. **Kế toán Giá thành theo các Chế độ (calculate_product_cost):** Tính Z, z, phân bổ SXC theo VAS 02.
+
+**Phần 2: Bộ 4 nhóm test tích hợp mới (`tests/test_new_integrations.py`):**
+9. **VBPL Lookup (`vbpl-lookup`):** Tìm kiếm VBPL, xác định hiệu lực văn bản, đối chiếu chéo tên tài khoản, tự động rà soát cảnh báo quá hạn 90 ngày (Staleness Check).
+10. **Tax Verify (`tax-verify`):** Tra cứu thông tin MST doanh nghiệp, xác thực tên công ty, đánh giá chỉ số rủi ro thuế, tính toán hạn nộp tờ khai và phạt chậm nộp.
+11. **Finance Tools (`finance-tools`):** Tra cứu tỷ giá trung tâm SBV, tỷ giá NHTM VCB, hạch toán chênh lệch tỷ giá VAS 10 (TK 515/635/413), tính khấu hao TSCĐ theo Thông tư 45/2013/TT-BTC, tra cứu chuẩn chi phí ngành VSIC.
+12. **Bank API (`bank-api`):** Kết nối danh mục ngân hàng, đối soát tự động giao dịch ngân hàng với sổ kế toán TK 112 và sinh khuyến nghị xử lý chênh lệch.
 
 ### Chạy kiểm thử chuyên sâu Kế toán Giá thành:
 ```bash

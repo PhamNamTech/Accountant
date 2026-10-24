@@ -3,30 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Node / JS dependencies & builds
+# Dependencies & temporary caches
 node_modules/
-dist/
-dist-ssr/
 *.local
-
-# Environment variables & secrets (Bảo mật thông tin ngân hàng & API key)
-.env
-.env.*
-!.env.example
-
-# Test outputs & temporary files
-tests/test_output/
-*.log
-
-# Databases & local storage
-*.db
-*.sqlite
-*.sqlite3
-
-# Corporate data isolation (Bảo vệ chứng từ, hóa đơn ngân hàng, sổ sách thực tế)
-data/
-Hach toan/
-sources/
-
-# Playwright browser cache
 .playwright/
+*.log

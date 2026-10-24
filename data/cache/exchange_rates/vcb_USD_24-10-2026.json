@@ -1,0 +1,11 @@
+{
+  "bank": "VCB",
+  "currency": "USD",
+  "date": "24/10/2026",
+  "mua_tien_mat": 25150.0,
+  "mua_chuyen_khoan": 25180.0,
+  "ban_chuyen_khoan": 25480.0,
+  "source_url": "https://www.vietcombank.com.vn",
+  "source_note": "Dữ liệu tham chiếu tỷ giá thương mại tiêu chuẩn",
+  "huong_dan_ap_dung": "Theo VAS 10 & TT 99/2025/TT-BTC:\n- Khi ghi nhận TÀI SẢN (ghi nhận nợ phải thu TK 131, mua hàng nhập kho TK 152/156): Dùng tỷ giá MUA CHUYỂN KHOẢN.\n- Khi ghi nhận NỢ PHẢI TRẢ (mua chịu phát sinh nợ TK 331, vay nợ TK 341): Dùng tỷ giá BÁN CHUYỂN KHOẢN."
+}

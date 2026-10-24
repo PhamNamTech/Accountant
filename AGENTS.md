@@ -159,10 +159,17 @@ Trước khi xử lý hạch toán hoặc tư vấn giá thành, agent cần nh�
 ## 5. QUY TẮC SỬ DỤNG CÔNG CỤ (MCP TOOLS & INTEGRATIONS)
 
 ### A. Quy trình phối hợp công cụ theo chuẩn luồng (Order of Execution):
-1. **Bước 1 (Trích xuất chứng từ):** Sử dụng `ketoan-vn` (`parse_vietnamese_invoice_xml`, PDF parser) để bóc tách hóa đơn đầu vào nguyên vật liệu, dịch vụ phân xưởng. *(Lưu ý kỹ thuật: Trình bóc tách XML hiện mới chỉ kiểm thử với dữ liệu giả lập theo định dạng Thông tư 78/2021/TT-BTC & Nghị định 123/2020/NĐ-CP; chưa kiểm tra định dạng XML thực tế theo Nghị định 254/2026/NĐ-CP và Thông tư 91/2026/TT-BTC)*.
-2. **Bước 2 (Đối chiếu tài khoản):** Sử dụng `lookup_accounting_account` đối chiếu danh mục tài khoản theo đúng chế độ kế toán áp dụng (truyền tham số `regime="TT99"`, `"TT200"`, hoặc `"TT133"` để tra cứu đúng tên tài khoản và trạng thái bãi bỏ theo từng chế độ).
-3. **Bước 3 (Phân bổ & Tính giá thành):** Gọi `allocate_overhead_costs` phân bổ chi phí SXC cho các sản phẩm, sau đó gọi `calculate_product_cost` tính Tổng giá thành $Z$ và Giá thành đơn vị $z$ (truyền tham số `regime="TT99"`, `"TT200"`, hoặc `"TT133"` để gợi ý định khoản đúng hệ thống tài khoản).
-4. **Bước 4 (Lưu trữ & Xuất báo cáo):** Cập nhật dữ liệu vào cơ sở dữ liệu `sqlite-ketoan` (lưu trữ phiếu xuất kho, lệnh sản xuất), sau đó dùng `excel-mcp` (`export_cost_sheet_excel`, `excel_write_to_sheet`) tạo Thẻ tính giá thành sản phẩm hoặc Sổ Nhật ký chung *(Lưu ý: Mã nguồn hiện tại đang tạo sổ theo Mẫu S03a-DN của Thông tư 200/2014/TT-BTC; biểu mẫu sổ theo Phụ lục I Thông tư 99/2025/TT-BTC chưa được lập trình)*.
+1. **Bước 1 (Trích xuất chứng từ):** Sử dụng `ketoan-vn` (`parse_vietnamese_invoice_xml`, PDF parser) để bóc tách hóa đơn đầu vào nguyên vật liệu, dịch vụ phân xưởng.
+2. **Bước 2 (Xác thực thực thể & Rủi ro thuế):** Sử dụng `tax-verify` (`lookup_tax_code`, `verify_business_info`, `check_tax_risk_indicators`, `verify_einvoice`) để xác minh MST người bán đang hoạt động bình thường, đối chiếu tên/địa chỉ và xác thực tình trạng hóa đơn điện tử không bị hủy hay thuộc doanh nghiệp rủi ro cao.
+3. **Bước 3 (Xác minh căn cứ pháp lý Nguồn Cấp 1):** Sử dụng `vbpl-lookup` (`search_legal_document`, `get_document_status`, `read_document_article`, `cross_reference_check`) để đối chiếu số hiệu, điều khoản trực tiếp từ cổng VBPL quốc gia và chạy `auto_staleness_check` để rà soát cảnh báo hiệu lực quá hạn 90 ngày.
+4. **Bước 4 (Đối soát tỷ giá, khấu hao & ngân hàng):** 
+   - Với giao dịch ngoại tệ: Gọi `finance-tools` (`get_sbv_exchange_rate`, `get_commercial_rate`, `calculate_fx_difference` theo Chuẩn mực VAS 10).
+   - Với tài sản cố định: Gọi `finance-tools` (`validate_useful_life`, `calculate_depreciation` theo Thông tư 45/2013/TT-BTC).
+   - Với ngân hàng: Gọi `bank-api` (`reconcile_bank_with_ledger`) để đối soát giao dịch TK 112 với sao kê.
+5. **Bước 5 (Phân bổ chi phí, tính giá thành & kiểm chuẩn):**
+   - Gọi `ketoan-vn` (`allocate_overhead_costs`, `calculate_product_cost` theo TT 99/TT 200/TT 133).
+   - Gọi `finance-tools` (`lookup_industry_cost_structure`, `compare_with_benchmark`) để kiểm tra tính hợp lý (Sanity Check) của tỷ lệ cơ cấu chi phí (% NVL, % NC, % SXC) so với ngưỡng trung bình ngành VSIC, phát hiện chi phí vượt định mức hoặc SXC cố định dưới công suất (VAS 02).
+6. **Bước 6 (Lưu trữ & Xuất báo cáo):** Cập nhật dữ liệu vào cơ sở dữ liệu `sqlite-ketoan` (lưu trữ phiếu xuất kho, lệnh sản xuất), sau đó dùng `OfficeCLI` hoặc `excel-mcp` (`export_cost_sheet_excel`, `excel_write_to_sheet`) tạo Thẻ tính giá thành sản phẩm hoặc Sổ Nhật ký chung.
 
 ### B. Kiểm tra tính hợp lý (Sanity Check Rule - Công cụ không phải chân lý):
 Agent bắt buộc đối soát logic trước khi đưa kết quả cho người dùng:
